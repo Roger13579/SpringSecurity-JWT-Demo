@@ -44,7 +44,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Product getProductById(Integer productId) {
-        String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date " + "FROM product " + "WHERE product_id = :productId ";
+        String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date " +
+                "FROM product " +
+                "WHERE product_id = :productId ";
         Map<String, Object> map = new HashMap<>();
         map.put("productId", productId);
         List<Product> query = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
