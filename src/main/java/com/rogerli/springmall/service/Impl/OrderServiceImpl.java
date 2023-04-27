@@ -5,6 +5,7 @@ import com.rogerli.springmall.dao.ProductDao;
 import com.rogerli.springmall.dao.UserDao;
 import com.rogerli.springmall.dto.BuyItem;
 import com.rogerli.springmall.dto.CreateOrderRequest;
+import com.rogerli.springmall.dto.OrderQueryParams;
 import com.rogerli.springmall.model.Order;
 import com.rogerli.springmall.model.OrderItem;
 import com.rogerli.springmall.model.Product;
@@ -78,6 +79,22 @@ public class OrderServiceImpl implements OrderService {
         orderDao.createOrderItem(orderId, orderItemList);
 
         return orderId;
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        List<Order> orderList = orderDao.getOrders(orderQueryParams);
+        for (Order order :orderList){
+            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrderId());
+            order.setOrderItemList(orderItemList);
+        }
+        return orderList;
+    }
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        Integer count = orderDao.countOrder(orderQueryParams);
+        return count;
     }
 
     @Override
