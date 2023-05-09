@@ -6,10 +6,14 @@ import com.rogerli.springmall.dao.UserDao;
 import com.rogerli.springmall.dto.BuyItem;
 import com.rogerli.springmall.dto.CreateOrderRequest;
 import com.rogerli.springmall.dto.OrderQueryParams;
-import com.rogerli.springmall.model.Order;
-import com.rogerli.springmall.model.OrderItem;
+import com.rogerli.springmall.entity.OrderItem;
+import com.rogerli.springmall.entity.Orders;
+import com.rogerli.springmall.model.OrderView;
+import com.rogerli.springmall.model.OrderItemView;
 import com.rogerli.springmall.model.Product;
 import com.rogerli.springmall.model.User;
+import com.rogerli.springmall.rowMapper.OrderItemRowMapper;
+import com.rogerli.springmall.rowMapper.OrderRowMapper;
 import com.rogerli.springmall.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderServiceImpl implements OrderService {
@@ -45,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
 
 
         int totalAmount = 0;
-        List<OrderItem> orderItemList = new ArrayList<>();
+        List<OrderItemView> orderItemViewList = new ArrayList<>();
 
         for (BuyItem buyItem : createOrderRequest.getBuyItemList()){
             Product product = productDao.getProductById(buyItem.getProductId());
@@ -66,42 +71,47 @@ public class OrderServiceImpl implements OrderService {
             totalAmount += amount;
 
             // 轉換BuyItem to OrderItem
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProductId(buyItem.getProductId());
-            orderItem.setQuantity(buyItem.getQuantity());
-            orderItem.setAmount(amount);
-            orderItemList.add(orderItem);
+            OrderItemView orderItemView = new OrderItemView();
+            orderItemView.setProductId(buyItem.getProductId());
+            orderItemView.setQuantity(buyItem.getQuantity());
+            orderItemView.setAmount(amount);
+            orderItemViewList.add(orderItemView);
         }
 
         // 創建訂單
         Integer orderId = orderDao.createOrder(userId, totalAmount);
 
-        orderDao.createOrderItem(orderId, orderItemList);
+        orderDao.createOrderItem(orderId, orderItemViewList);
 
         return orderId;
     }
 
     @Override
-    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
-        List<Order> orderList = orderDao.getOrders(orderQueryParams);
-        for (Order order :orderList){
-            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrderId());
-            order.setOrderItemList(orderItemList);
+    public List<OrderView> getOrders(OrderQueryParams orderQueryParams) {
+        List<Orders> orderList = orderDao.getOrders(orderQueryParams);
+        List<OrderView> orderViewList = orderList.stream().map(OrderRowMapper::mapOrder).collect(Collectors.toList());
+        for (OrderView orderView : orderViewList){
+            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderView.getOrderId());
+            List<OrderItemView> orderItemViews = orderItemList.stream().map(e -> new OrderItemRowMapper().mapOrderItem(e)).collect(Collectors.toList());
+            orderView.setOrderItemViewList(orderItemViews);
         }
-        return orderList;
+        return orderViewList;
     }
 
     @Override
     public Integer countOrder(OrderQueryParams orderQueryParams) {
-        Integer count = orderDao.countOrder(orderQueryParams);
-        return count;
+//        Integer count = orderDao.countOrder(orderQueryParams);
+        List<Orders> orderList = orderDao.getOrders(orderQueryParams);
+        return orderList.size();
     }
 
     @Override
-    public Order getOrderById(Integer orderId) {
-        Order order = orderDao.getOrderByOrderId(orderId);
+    public OrderView getOrderById(Integer orderId) {
+        Orders order = orderDao.getOrderByOrderId(orderId);
+        OrderView orderView = new OrderRowMapper().mapOrder(order);
         List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
-        order.setOrderItemList(orderItemList);
-        return order;
+        List<OrderItemView> orderItemViews = orderItemList.stream().map(e -> new OrderItemRowMapper().mapOrderItem(e)).collect(Collectors.toList());
+        orderView.setOrderItemViewList(orderItemViews);
+        return orderView;
     }
 }

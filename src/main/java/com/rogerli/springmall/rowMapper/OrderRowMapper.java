@@ -1,20 +1,30 @@
 package com.rogerli.springmall.rowMapper;
 
-import com.rogerli.springmall.model.Order;
+import com.rogerli.springmall.entity.Orders;
+import com.rogerli.springmall.model.OrderView;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class OrderRowMapper implements RowMapper<Order> {
+public class OrderRowMapper implements RowMapper<OrderView> {
     @Override
-    public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Order order = new Order();
-        order.setOrderId(rs.getInt("order_id"));
-        order.setUserId(rs.getInt("user_id"));
-        order.setTotalAmount(rs.getInt("total_amount"));
-        order.setCreatedDate(rs.getTimestamp("created_date"));
-        order.setLastModifiedDate(rs.getTimestamp("last_modified_date"));
-        return order;
+    public OrderView mapRow(ResultSet rs, int rowNum) throws SQLException {
+        OrderView orderView = new OrderView();
+        orderView.setOrderId(rs.getInt("order_id"));
+        orderView.setUserId(rs.getInt("user_id"));
+        orderView.setTotalAmount(rs.getInt("total_amount"));
+        orderView.setCreatedDate(rs.getTimestamp("created_date"));
+        orderView.setLastModifiedDate(rs.getTimestamp("last_modified_date"));
+        return orderView;
+    }
+    public static OrderView mapOrder(Orders orderEntity){
+        OrderView orderView = new OrderView();
+        orderView.setOrderId(orderEntity.getOrderId());
+        orderView.setUserId(orderEntity.getUserId());
+        orderView.setTotalAmount(orderEntity.getTotalAmount());
+        orderView.setCreatedDate(orderEntity.getCreatedDate());
+        orderView.setLastModifiedDate(orderEntity.getLastModifiedDate());
+        return orderView;
     }
 }

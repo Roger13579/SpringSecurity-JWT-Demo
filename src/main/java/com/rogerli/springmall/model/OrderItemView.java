@@ -3,7 +3,7 @@ package com.rogerli.springmall.model;
 import lombok.Data;
 
 @Data
-public class OrderItem {
+public class OrderItemView {
 
     private Integer orderItemId;
     private Integer orderId;

@@ -1,17 +1,19 @@
-package com.rogerli.springmall.model;
+package com.rogerli.springmall.entity;
 
+import com.rogerli.springmall.model.OrderView;
 import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
-import java.util.List;
 
 @Data
-public class Order {
-
+@Entity
+public class Orders extends OrderView {
+    @Id
     private Integer orderId;
     private Integer userId;
     private Integer totalAmount;
     private Date createdDate;
     private Date lastModifiedDate;
-    private List<OrderItem> orderItemList;
 }
