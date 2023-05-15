@@ -1,16 +1,19 @@
 package com.rogerli.springmall.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
 public class OrderItem {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer orderItemId;
     private Integer orderId;
     @Column(name = "product_id",insertable = false,updatable = false)
@@ -18,7 +21,8 @@ public class OrderItem {
     private Integer quantity;
     private Integer amount;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     private Product product;
 

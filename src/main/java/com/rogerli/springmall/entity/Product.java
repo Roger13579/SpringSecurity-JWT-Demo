@@ -1,30 +1,37 @@
 package com.rogerli.springmall.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.rogerli.springmall.constant.ProductCategory;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 public class Product {
     @Id
     @Column(name = "product_id")
     private Integer productId;
     private String productName;
-    private ProductCategory category;
+    private String category;
     private String imageUrl;
     private Integer price;
     private Integer stock;
     private String description;
-    private Date createDate;
+    private Date createdDate;
     private Date lastModifiedDate;
 
-    @OneToOne(mappedBy = "product")
-    private OrderItem orderItem;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "product")
+    @JsonIgnore
+    private List<OrderItem> orderItem;
 
 }

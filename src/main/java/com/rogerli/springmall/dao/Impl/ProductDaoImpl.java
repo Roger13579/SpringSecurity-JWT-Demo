@@ -1,12 +1,16 @@
 package com.rogerli.springmall.dao.Impl;
 
-import com.rogerli.springmall.constant.ProductCategory;
 import com.rogerli.springmall.dao.ProductDao;
 import com.rogerli.springmall.dto.ProductQueryParams;
 import com.rogerli.springmall.dto.ProductRequest;
-import com.rogerli.springmall.model.Product;
+import com.rogerli.springmall.model.ProductView;
+import com.rogerli.springmall.entity.Product;
+import com.rogerli.springmall.repository.ProductJpaDao;
 import com.rogerli.springmall.rowMapper.ProductRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,37 +28,36 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Autowired
+    private ProductJpaDao productJpaDao;
+
     @Override
-    public List<Product> getProducts(ProductQueryParams productQueryParams) {
-        String sql = "SELECT product_id,product_name, category, image_url, price, stock, " +
-                "description, created_date, last_modified_date " +
-                "FROM product " +
-                "WHERE 1=1 ";
-        Map<String, Object> map = new HashMap<>();
-        sql = addFilteringSql(sql,map,productQueryParams);
-        //排序
-        sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
-        //分頁
-        sql = sql + " LIMIT :limit OFFSET :offset";
-        map.put("limit", productQueryParams.getLimit());
-        map.put("offset", productQueryParams.getOffset());
-        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
-        return productList;
+    public Page<Product> getProducts(ProductQueryParams productQueryParams) {
+        if (productQueryParams.getCategory() == null){
+            return productJpaDao.findAllByProductNameContaining(
+                    productQueryParams.getSearch(),
+                    PageRequest.of(productQueryParams.getPageNumber()-1
+                            , productQueryParams.getLimit()
+                            , Sort.by(productQueryParams.getOrderBy()).descending())
+            );
+        }else {
+            return productJpaDao.findAllByCategoryAndProductNameContaining(
+                    productQueryParams.getCategory().name(),
+                    productQueryParams.getSearch(),
+                    PageRequest.of(productQueryParams.getPageNumber()-1
+                            , productQueryParams.getLimit()
+                            , Sort.by(productQueryParams.getOrderBy()).descending())
+            );
+        }
     }
 
     @Override
-    public Product getProductById(Integer productId) {
-        String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date " +
-                "FROM product " +
-                "WHERE product_id = :productId ";
-        Map<String, Object> map = new HashMap<>();
-        map.put("productId", productId);
-        List<Product> query = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
-
-        if (query.size() > 0) {
-            return query.get(0);
-        } else {
+    public ProductView getProductById(Integer productId) {
+        Product product = productJpaDao.findByProductId(productId);
+        if (product == null) {
             return null;
+        } else {
+            return new ProductRowMapper().mapRow(product);
         }
     }
 

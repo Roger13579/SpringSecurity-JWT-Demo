@@ -3,10 +3,12 @@ package com.rogerli.springmall.controller;
 import com.rogerli.springmall.constant.ProductCategory;
 import com.rogerli.springmall.dto.ProductQueryParams;
 import com.rogerli.springmall.dto.ProductRequest;
-import com.rogerli.springmall.model.Product;
+import com.rogerli.springmall.entity.Product;
+import com.rogerli.springmall.model.ProductView;
 import com.rogerli.springmall.service.ProductService;
-import com.rogerli.springmall.util.Page;
+//import com.rogerli.springmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,40 +29,38 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<Page<Product>> getProducts(
             // Filtering
-            @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "1=1") ProductCategory category,
+            @RequestParam(defaultValue = "") String search,
             // Sorting
-            @RequestParam(defaultValue = "created_date") String orderBy,
-            @RequestParam(defaultValue = "desc") String sort,
+            @RequestParam(defaultValue = "createdDate") String orderBy,
             // pagination
             @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
-            @RequestParam(defaultValue = "0") @Min(0) Integer offset
+            @RequestParam(defaultValue = "1") @Min(0) Integer pageNumber
     ){
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
         productQueryParams.setOrderBy(orderBy);
-        productQueryParams.setSort(sort);
         productQueryParams.setLimit(limit);
-        productQueryParams.setOffset(offset);
+        productQueryParams.setPageNumber(pageNumber);
         // get productlist
-        List<Product> productList = productService.getProducts(productQueryParams);
-
+        Page<Product> products = productService.getProducts(productQueryParams);
+        products.getPageable();
         // get product total count
         Integer total = productService.countProduct(productQueryParams);
 
         // paging
-        Page<Product> page = new Page<>();
-        page.setLimit(limit);
-        page.setOffset(offset);
-        page.setTotal(total);
-        page.setResults(productList);
-        return ResponseEntity.status(HttpStatus.OK).body(page);
+//        Page<ProductView> page = new Page<>();
+//        page.setLimit(limit);
+//        page.setOffset(offset);
+//        page.setTotal(total);
+//        page.setResults(productList);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     @GetMapping("/products/{productId}")
-    public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
-        Product product = productService.getProductById(productId);
+    public ResponseEntity<ProductView> getProduct(@PathVariable Integer productId){
+        ProductView product = productService.getProductById(productId);
 
         if (product != null){
             return ResponseEntity.status(HttpStatus.OK).body(product);
@@ -70,23 +70,23 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest){
+    public ResponseEntity<ProductView> createProduct(@RequestBody @Valid ProductRequest productRequest){
         Integer productId = productService.createProduct(productRequest);
-        Product product = productService.getProductById(productId);
+        ProductView product = productService.getProductById(productId);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PutMapping("/products/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId,
+    public ResponseEntity<ProductView> updateProduct(@PathVariable Integer productId,
                                                  @RequestBody @Valid ProductRequest productRequest){
         // 檢查product是否存在
-        Product product = productService.getProductById(productId);
+        ProductView product = productService.getProductById(productId);
         if (product == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         // 修改商品的數據
         productService.updateProduct(productId,productRequest);
-        Product updatedProduct = productService.getProductById(productId);
+        ProductView updatedProduct = productService.getProductById(productId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 

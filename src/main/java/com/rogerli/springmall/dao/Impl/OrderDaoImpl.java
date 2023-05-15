@@ -33,8 +33,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public List<Orders> getOrders(OrderQueryParams orderQueryParams) {
-        List<Orders> orderList = orderJpaDao.findByUserId(orderQueryParams.getUserId());
-        return orderList;
+        return orderJpaDao.findByUserId(orderQueryParams.getUserId());
     }
 
     @Override
@@ -52,9 +51,7 @@ public class OrderDaoImpl implements OrderDao {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
 
-        int orderId = keyHolder.getKey().intValue();
-
-        return orderId;
+        return keyHolder.getKey().intValue();
     }
 
     @Override
@@ -85,16 +82,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
-        List<OrderItem> orderItemList = orderItemJpaDao.findOrderItemByOrderIdJoinProduct(orderId);
-        return orderItemList;
-    }
-
-    private String addFilteringSql(String sql, Map<String,Object> map, OrderQueryParams orderQueryParams){
-        if (orderQueryParams.getUserId() != null){
-            sql = sql + " AND user_id = :userId ";
-            map.put("userId",orderQueryParams.getUserId());
-        }
-        return sql;
+        return orderItemJpaDao.findOrderItemByOrderIdJoinProduct(orderId);
     }
 
 }
