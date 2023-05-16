@@ -6,24 +6,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
 public class OrderItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderItemId;
     private Integer orderId;
-    @Column(name = "product_id",insertable = false,updatable = false)
+    @Column(name = "product_id")
     private Integer productId;
     private Integer quantity;
     private Integer amount;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "product_id",insertable = false,updatable = false)
     private Product product;
 
     public OrderItem(Integer orderItemId, Integer orderId, Integer productId, Integer quantity, Integer amount, String productame, String imageUrl) {

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class UsreDaoImpl implements UserDao {
+public class UserDaoImpl implements UserDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;

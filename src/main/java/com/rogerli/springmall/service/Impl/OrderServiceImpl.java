@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
 
 
         int totalAmount = 0;
-        List<OrderItemView> orderItemViewList = new ArrayList<>();
+        List<OrderItem> orderItemList = new ArrayList<>();
 
         for (BuyItem buyItem : createOrderRequest.getBuyItemList()){
             ProductView product = productDao.getProductById(buyItem.getProductId());
@@ -71,17 +72,26 @@ public class OrderServiceImpl implements OrderService {
             totalAmount += amount;
 
             // 轉換BuyItem to OrderItem
-            OrderItemView orderItemView = new OrderItemView();
-            orderItemView.setProductId(buyItem.getProductId());
-            orderItemView.setQuantity(buyItem.getQuantity());
-            orderItemView.setAmount(amount);
-            orderItemViewList.add(orderItemView);
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductId(buyItem.getProductId());
+            orderItem.setQuantity(buyItem.getQuantity());
+            orderItem.setAmount(amount);
+            orderItemList.add(orderItem);
         }
 
         // 創建訂單
-        Integer orderId = orderDao.createOrder(userId, totalAmount);
+        Orders orders = new Orders();
+        Date now = new Date();
+        orders.setUserId(userId);
+        orders.setTotalAmount(totalAmount);
+        orders.setCreatedDate(now);
+        orders.setLastModifiedDate(now);
+        Integer orderId = orderDao.createOrder(orders);
 
-        orderDao.createOrderItem(orderId, orderItemViewList);
+        for (OrderItem orderItem : orderItemList) {
+            orderItem.setOrderId(orderId);
+        }
+        orderDao.createOrderItem(orderItemList);
 
         return orderId;
     }
@@ -100,7 +110,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer countOrder(OrderQueryParams orderQueryParams) {
-//        Integer count = orderDao.countOrder(orderQueryParams);
         List<Orders> orderList = orderDao.getOrders(orderQueryParams);
         return orderList.size();
     }

@@ -12,4 +12,5 @@ public class OrderItemView {
     private Integer amount;
     private String productName;
     private String imageUrl;
+
 }

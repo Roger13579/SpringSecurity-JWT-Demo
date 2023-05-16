@@ -10,9 +10,9 @@ import java.util.List;
 public interface OrderDao {
     List<Orders> getOrders(OrderQueryParams orderQueryParams);
 
-    Integer createOrder(Integer userId, Integer totalamount);
+    Integer createOrder(Orders orders);
 
-    void createOrderItem(Integer orderId, List<OrderItemView> orderItemViewList);
+    void createOrderItem(List<OrderItem> orderItemViewList);
 
     Orders getOrderByOrderId(Integer orderId);
 

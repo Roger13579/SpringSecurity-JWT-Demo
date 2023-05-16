@@ -23,9 +23,6 @@ import java.util.Map;
 public class OrderDaoImpl implements OrderDao {
 
     @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    @Autowired
     private OrderJpaDao orderJpaDao;
 
     @Autowired
@@ -37,37 +34,14 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Integer createOrder(Integer userId, Integer totalamount) {
-        String sql = "INSERT INTO orders (user_id, total_amount, created_date, last_modified_date) " +
-                "VALUES (:userId, :totalAmount, :createdDate, :lastModifiedDate)";
-
-        Map<String,Object> map = new HashMap<>();
-        map.put("userId", userId);
-        map.put("totalAmount", totalamount);
-
-        Date now = new Date();
-        map.put("createdDate", now);
-        map.put("lastModifiedDate", now);
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-
-        return keyHolder.getKey().intValue();
+    public Integer createOrder(Orders orders) {
+        Orders createdOrder = orderJpaDao.save(orders);
+        return createdOrder.getOrderId();
     }
 
     @Override
-    public void createOrderItem(Integer orderId, List<OrderItemView> orderItemList) {
-        String sql = "INSERT INTO order_item(order_id, product_id, quantity, amount) " +
-                "VALUES (:orderId, :productId, :quantity, :amount)";
-        MapSqlParameterSource[] parameterSources = new MapSqlParameterSource[orderItemList.size()];
-        for (int i = 0; i < orderItemList.size(); i++) {
-            OrderItemView orderItem = orderItemList.get(i);
-            parameterSources[i] = new MapSqlParameterSource();
-            parameterSources[i].addValue("orderId",orderId);
-            parameterSources[i].addValue("productId",orderItem.getProductId());
-            parameterSources[i].addValue("quantity",orderItem.getQuantity());
-            parameterSources[i].addValue("amount",orderItem.getAmount());
-        }
-        namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+    public void createOrderItem(List<OrderItem> orderItemList) {
+        orderItemJpaDao.saveAll(orderItemList);
     }
 
     @Override
