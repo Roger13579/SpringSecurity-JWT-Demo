@@ -19,5 +19,5 @@ public class User {
     @JsonIgnore
     private String password;
     private Date createdDate;
-    private Date lastModifuedDate;
+    private Date lastModifiedDate;
 }

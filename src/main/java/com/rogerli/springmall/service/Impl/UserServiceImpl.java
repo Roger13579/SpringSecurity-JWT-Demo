@@ -3,7 +3,8 @@ package com.rogerli.springmall.service.Impl;
 import com.rogerli.springmall.dao.UserDao;
 import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.dto.UserRegisterRequest;
-import com.rogerli.springmall.model.User;
+import com.rogerli.springmall.entity.User;
+import com.rogerli.springmall.model.UserView;
 import com.rogerli.springmall.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Date;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -26,19 +29,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer register(UserRegisterRequest userRegisterRequest) {
-        User user = userDao.getUserByEmail(userRegisterRequest.getEmail());
+    public User register(UserRegisterRequest userRegisterRequest) {
+        User checkUser = userDao.getUserByEmail(userRegisterRequest.getEmail());
 
-        if (user != null){
+        if (checkUser != null){
             log.error("該 email {} 已經被註冊", userRegisterRequest.getEmail());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-
+        User user = new User();
+        Date now = new Date();
+        user.setEmail(userRegisterRequest.getEmail());
+        user.setCreatedDate(now);
+        user.setLastModifiedDate(now);
         //使用MD5生成密碼的雜湊值
         String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
-        userRegisterRequest.setPassword(hashedPassword);
+        user.setPassword(hashedPassword);
 
-        return userDao.createUser(userRegisterRequest);
+        return userDao.createUser(user);
     }
 
     @Override

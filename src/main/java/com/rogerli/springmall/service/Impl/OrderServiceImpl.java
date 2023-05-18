@@ -8,10 +8,11 @@ import com.rogerli.springmall.dto.CreateOrderRequest;
 import com.rogerli.springmall.dto.OrderQueryParams;
 import com.rogerli.springmall.entity.OrderItem;
 import com.rogerli.springmall.entity.Orders;
+import com.rogerli.springmall.entity.Product;
+import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.model.OrderView;
 import com.rogerli.springmall.model.OrderItemView;
-import com.rogerli.springmall.model.ProductView;
-import com.rogerli.springmall.model.User;
+import com.rogerli.springmall.model.UserView;
 import com.rogerli.springmall.rowMapper.OrderItemRowMapper;
 import com.rogerli.springmall.rowMapper.OrderRowMapper;
 import com.rogerli.springmall.service.OrderService;
@@ -54,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItemList = new ArrayList<>();
 
         for (BuyItem buyItem : createOrderRequest.getBuyItemList()){
-            ProductView product = productDao.getProductById(buyItem.getProductId());
+            Product product = productDao.getProductById(buyItem.getProductId());
 
             // 檢查product是否存在,數量是否足夠
             if (product == null){

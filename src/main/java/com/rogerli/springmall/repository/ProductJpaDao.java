@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductJpaDao extends JpaRepository<Product,Long> {
+public interface ProductJpaDao extends JpaRepository<Product,Integer> {
 
     Product findByProductId(Integer prodyctId);
     Page<Product> findAllByProductNameContaining(String productName, Pageable pageable);

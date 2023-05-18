@@ -12,14 +12,12 @@ import java.util.List;
 public interface ProductDao {
     Page<Product> getProducts(ProductQueryParams productQueryParams);
 
-    ProductView getProductById(Integer productId);
+    Product getProductById(Integer productId);
 
-    Integer createProduct(ProductRequest productRequest);
-    void updateProduct(Integer productId, ProductRequest productRequest);
+    Product createOrUpdateProduct(Product product);
 
     void updateStock(Integer productId, Integer stock);
 
     void deleteProductById(Integer productId);
 
-    Integer countProduct(ProductQueryParams productQueryParams);
 }

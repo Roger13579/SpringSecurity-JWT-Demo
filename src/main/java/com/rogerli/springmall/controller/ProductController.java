@@ -5,6 +5,7 @@ import com.rogerli.springmall.dto.ProductQueryParams;
 import com.rogerli.springmall.dto.ProductRequest;
 import com.rogerli.springmall.entity.Product;
 import com.rogerli.springmall.model.ProductView;
+import com.rogerli.springmall.rowMapper.ProductRowMapper;
 import com.rogerli.springmall.service.ProductService;
 //import com.rogerli.springmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,24 +47,16 @@ public class ProductController {
         // get productlist
         Page<Product> products = productService.getProducts(productQueryParams);
         products.getPageable();
-        // get product total count
-        Integer total = productService.countProduct(productQueryParams);
 
-        // paging
-//        Page<ProductView> page = new Page<>();
-//        page.setLimit(limit);
-//        page.setOffset(offset);
-//        page.setTotal(total);
-//        page.setResults(productList);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     @GetMapping("/products/{productId}")
     public ResponseEntity<ProductView> getProduct(@PathVariable Integer productId){
-        ProductView product = productService.getProductById(productId);
+        Product product = productService.getProductById(productId);
 
         if (product != null){
-            return ResponseEntity.status(HttpStatus.OK).body(product);
+            return ResponseEntity.status(HttpStatus.OK).body(new ProductRowMapper().mapRow(product));
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -71,23 +64,21 @@ public class ProductController {
 
     @PostMapping("/products")
     public ResponseEntity<ProductView> createProduct(@RequestBody @Valid ProductRequest productRequest){
-        Integer productId = productService.createProduct(productRequest);
-        ProductView product = productService.getProductById(productId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+        Product product = productService.createProduct(productRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductRowMapper().mapRow(product));
     }
 
     @PutMapping("/products/{productId}")
     public ResponseEntity<ProductView> updateProduct(@PathVariable Integer productId,
                                                  @RequestBody @Valid ProductRequest productRequest){
         // 檢查product是否存在
-        ProductView product = productService.getProductById(productId);
+        Product product = productService.getProductById(productId);
         if (product == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         // 修改商品的數據
-        productService.updateProduct(productId,productRequest);
-        ProductView updatedProduct = productService.getProductById(productId);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+        Product updatedProduct = productService.updateProduct(product, productRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(new ProductRowMapper().mapRow(updatedProduct));
     }
 
     @DeleteMapping("/products/{productId}")

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -24,29 +25,40 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductView getProductById(Integer productId) {
+    public Product getProductById(Integer productId) {
         return productDao.getProductById(productId);
     }
 
     @Override
-    public Integer createProduct(ProductRequest productRequest) {
-        return productDao.createProduct(productRequest);
+    public Product createProduct(ProductRequest productRequest) {
+        Product product = new Product();
+        product.setProductName(productRequest.getProductName());
+        product.setCategory(productRequest.getCategory().name());
+        product.setImageUrl(productRequest.getImageUrl());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setStock(productRequest.getStock());
+        Date now = new Date();
+        product.setCreatedDate(now);
+        product.setLastModifiedDate(now);
+        return productDao.createOrUpdateProduct(product);
     }
 
     @Override
-    public void updateProduct(Integer productId, ProductRequest productRequest) {
-        productDao.updateProduct(productId,productRequest);
+    public Product updateProduct(Product product, ProductRequest productRequest) {
+        product.setProductName(productRequest.getProductName());
+        product.setCategory(productRequest.getCategory().name());
+        product.setImageUrl(productRequest.getImageUrl());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setStock(productRequest.getStock());
+        Date now = new Date();
+        product.setLastModifiedDate(now);
+        return productDao.createOrUpdateProduct(product);
     }
 
     @Override
     public void deleteProductById(Integer productId) {
         productDao.deleteProductById(productId);
     }
-
-    @Override
-    public Integer countProduct(ProductQueryParams productQueryParams) {
-        return productDao.countProduct(productQueryParams);
-    }
-
-
 }

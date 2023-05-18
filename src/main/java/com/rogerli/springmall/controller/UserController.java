@@ -2,7 +2,8 @@ package com.rogerli.springmall.controller;
 
 import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.dto.UserRegisterRequest;
-import com.rogerli.springmall.model.User;
+import com.rogerli.springmall.entity.User;
+import com.rogerli.springmall.model.UserView;
 import com.rogerli.springmall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,7 @@ public class UserController {
 
     @PostMapping("/users/register")
     public ResponseEntity<User> register(@RequestBody @Valid UserRegisterRequest userRegisterRequest){
-        Integer userId = userService.register(userRegisterRequest);
-
-        User user = userService.getUserById(userId);
+        User user = userService.register(userRegisterRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
