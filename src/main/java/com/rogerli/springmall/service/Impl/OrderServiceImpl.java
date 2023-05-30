@@ -12,7 +12,6 @@ import com.rogerli.springmall.entity.Product;
 import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.model.OrderView;
 import com.rogerli.springmall.model.OrderItemView;
-import com.rogerli.springmall.model.UserView;
 import com.rogerli.springmall.rowMapper.OrderItemRowMapper;
 import com.rogerli.springmall.rowMapper.OrderRowMapper;
 import com.rogerli.springmall.service.OrderService;

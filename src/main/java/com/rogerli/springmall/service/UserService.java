@@ -3,7 +3,7 @@ package com.rogerli.springmall.service;
 import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.dto.UserRegisterRequest;
 import com.rogerli.springmall.entity.User;
-import com.rogerli.springmall.model.UserView;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
 
@@ -12,4 +12,7 @@ public interface UserService {
     User register(UserRegisterRequest userRegisterRequest);
 
     User login(UserLoginRequest userLoginRequest);
+//    User login(UserLoginRequest userLoginRequest);
+
+    User createUser(UserRegisterRequest userRegisterRequest);
 }
