@@ -21,24 +21,21 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/users/{userId}/orders")
-    public ResponseEntity<OrderView> createOrder(@PathVariable Integer userId,
-                                                 @Valid @RequestBody CreateOrderRequest createOrderRequest){
-        Integer orderId = orderService.createOrder(userId, createOrderRequest);
+    @PostMapping("/users/orders")
+    public ResponseEntity<OrderView> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest){
+        Integer orderId = orderService.createOrder(createOrderRequest);
 
         OrderView orderView = orderService.getOrderById(orderId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderView);
     }
 
-    @GetMapping("/users/{userId}/orders")
+    @GetMapping("/users/orders")
     public ResponseEntity<Page<OrderView>> getOrders(
-            @PathVariable Integer userId,
             @RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
             @RequestParam(defaultValue = "0") @Min(0) Integer offset
     ){
         OrderQueryParams orderQueryParams = new OrderQueryParams();
-        orderQueryParams.setUserId(userId);
         orderQueryParams.setLimit(limit);
         orderQueryParams.setOffset(offset);
 

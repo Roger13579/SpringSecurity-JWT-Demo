@@ -2,7 +2,6 @@ package com.rogerli.springmall.config;
 
 import com.rogerli.springmall.constant.UserAuthority;
 import com.rogerli.springmall.filter.JWTAuthenticationFilter;
-import com.rogerli.springmall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;

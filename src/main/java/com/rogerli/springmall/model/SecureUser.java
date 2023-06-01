@@ -25,6 +25,9 @@ public class SecureUser implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    public Integer getUserId() {
+        return user.getUserId();
+    }
     @Override
     public String getPassword() {
         return user.getPassword();

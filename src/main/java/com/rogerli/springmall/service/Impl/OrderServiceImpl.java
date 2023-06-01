@@ -12,6 +12,7 @@ import com.rogerli.springmall.entity.Product;
 import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.model.OrderView;
 import com.rogerli.springmall.model.OrderItemView;
+import com.rogerli.springmall.model.UserIdentity;
 import com.rogerli.springmall.rowMapper.OrderItemRowMapper;
 import com.rogerli.springmall.rowMapper.OrderRowMapper;
 import com.rogerli.springmall.service.OrderService;
@@ -37,13 +38,17 @@ public class OrderServiceImpl implements OrderService {
     private ProductDao productDao;
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private UserIdentity userIdentity;
     private final static Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Transactional
     @Override
-    public Integer createOrder(Integer userId, CreateOrderRequest createOrderRequest) {
+    public Integer createOrder(CreateOrderRequest createOrderRequest) {
+        Integer userId = userIdentity.getId();
         // 檢查user是否存在
-        User user = userDao.getUserById(userId);
+        User user = userDao.getUserById(userIdentity.getId());
         if (user == null){
             log.warn("該 userid {} 不存在",userId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -98,6 +103,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderView> getOrders(OrderQueryParams orderQueryParams) {
+        orderQueryParams.setUserId(userIdentity.getId());
         List<Orders> orderList = orderDao.getOrders(orderQueryParams);
         List<OrderView> orderViewList = orderList.stream().map(OrderRowMapper::mapOrder).collect(Collectors.toList());
         for (OrderView orderView : orderViewList){
