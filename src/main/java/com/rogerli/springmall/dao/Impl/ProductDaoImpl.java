@@ -50,12 +50,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Product getProductById(Integer productId) {
-        Product product = productJpaDao.findByProductId(productId);
-        if (product == null) {
-            return null;
-        } else {
-            return product;
-        }
+        return productJpaDao.findByProductId(productId);
     }
 
     @Override

@@ -54,7 +54,6 @@ public class OrderServiceImpl implements OrderService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-
         int totalAmount = 0;
         List<OrderItem> orderItemList = new ArrayList<>();
 

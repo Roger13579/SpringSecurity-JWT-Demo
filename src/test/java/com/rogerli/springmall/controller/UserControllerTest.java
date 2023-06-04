@@ -1,18 +1,30 @@
 package com.rogerli.springmall.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rogerli.springmall.constant.UserAuthority;
 import com.rogerli.springmall.dao.UserDao;
 import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.dto.UserRegisterRequest;
+import com.rogerli.springmall.entity.Roles;
 import com.rogerli.springmall.entity.User;
+import com.rogerli.springmall.repository.RoleJpaRepository;
+import com.rogerli.springmall.repository.UserJpaDao;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -30,7 +42,46 @@ public class UserControllerTest {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private UserJpaDao userJpaDao;
+
+    @Autowired
+    private RoleJpaRepository roleJpaRepository;
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    public void register_JWTAuth() throws Exception{
+        // 建立使用者
+        String password = "123456";
+        User user = new User();
+        Set<Roles> set = new HashSet<>();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Content-Type", "application/json");
+        Roles admin = roleJpaRepository.findByRoleName(UserAuthority.ADMIN);
+        Date now = new Date();
+        set.add(admin);
+        user.setEmail("Roger123@gmail.com");
+        user.setPassword(new BCryptPasswordEncoder().encode(password));
+        user.setAuthorities(set);
+        user.setCreatedDate(now);
+        user.setLastModifiedDate(now);
+        userJpaDao.save(user);
+
+        UserLoginRequest authReq = new UserLoginRequest();
+        authReq.setEmail(user.getEmail());
+        authReq.setPassword(password);
+        RequestBuilder authRequestBuilder = MockMvcRequestBuilders
+                .post("/users/auth")
+                .headers(httpHeaders)
+                .content(objectMapper.writeValueAsString(authReq));
+
+        MvcResult result = mockMvc.perform(authRequestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+        JSONObject tokenRes = new JSONObject(result.getResponse().getContentAsString());
+        String accessToken = tokenRes.getString("token");
+        System.out.println(accessToken);
+    }
 
     // 註冊新帳號
     @Test
