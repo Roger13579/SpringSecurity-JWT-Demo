@@ -1,26 +1,17 @@
 package com.rogerli.springmall.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rogerli.springmall.constant.UserAuthority;
 import com.rogerli.springmall.dto.BuyItem;
 import com.rogerli.springmall.dto.CreateOrderRequest;
-import com.rogerli.springmall.dto.UserLoginRequest;
-import com.rogerli.springmall.dto.UserRegisterRequest;
-import com.rogerli.springmall.entity.Roles;
 import com.rogerli.springmall.entity.User;
-import com.rogerli.springmall.model.SecureUser;
 import com.rogerli.springmall.repository.RoleJpaRepository;
 import com.rogerli.springmall.repository.UserJpaDao;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,54 +25,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OrdersControllerTest {
+public class OrdersControllerTest extends BaseTest{
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private UserJpaDao userJpaDao;
-
-    @Autowired
-    private RoleJpaRepository roleJpaRepository;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 創建使用者後新增訂單
 //    @Transactional
     @Test
     public void createOrder_JWTAuth() throws Exception {
         // 建立使用者
-        String password = "123456";
-        User user = new User();
-        Set<Roles> set = new HashSet<>();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", "application/json");
-        Roles admin = roleJpaRepository.findByRoleName(UserAuthority.ADMIN);
-        Date now = new Date();
-        set.add(admin);
-        user.setEmail("Roger123@gmail.com");
-        user.setPassword(new BCryptPasswordEncoder().encode(password));
-        user.setAuthorities(set);
-        user.setCreatedDate(now);
-        user.setLastModifiedDate(now);
-        userJpaDao.save(user);
+        User userAdmin = createUser_Admin();
+        login(userAdmin);
 
-        UserLoginRequest authReq = new UserLoginRequest();
-        authReq.setEmail(user.getEmail());
-        authReq.setPassword(password);
-        RequestBuilder authRequestBuilder = MockMvcRequestBuilders
-                .post("/users/auth")
-                .headers(httpHeaders)
-                .content(objectMapper.writeValueAsString(authReq));
-
-        MvcResult result = mockMvc.perform(authRequestBuilder)
-                .andExpect(status().isOk())
-                .andReturn();
-        JSONObject tokenRes = new JSONObject(result.getResponse().getContentAsString());
-        String accessToken = tokenRes.getString("token");
-        // 發送 MockMVC 請求
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
         List<BuyItem> buyItemList = new ArrayList<>();
 
