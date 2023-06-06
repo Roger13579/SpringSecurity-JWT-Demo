@@ -41,12 +41,6 @@ public class BaseTest {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final String USER_PASSWORD = "123456";
 
-    @BeforeEach
-    public void initHttpHeaders(){
-        httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", "application/json");
-    }
-
     protected User createUser_Admin() {
         User user = new User();
         Set<Roles> set = new HashSet<>();
@@ -60,10 +54,13 @@ public class BaseTest {
         user.setLastModifiedDate(now);
         return userJpaDao.save(user);
     }
-
-    protected void login(User user) throws Exception {
+    @BeforeEach
+    protected void login() throws Exception {
+        httpHeaders = new HttpHeaders();
+        httpHeaders.add("Content-Type", "application/json");
+        User userAdmin = createUser_Admin();
         UserLoginRequest authReq = new UserLoginRequest();
-        authReq.setEmail(user.getEmail());
+        authReq.setEmail(userAdmin.getEmail());
         authReq.setPassword(USER_PASSWORD);
         RequestBuilder authRequestBuilder = MockMvcRequestBuilders
                 .post("/users/auth")

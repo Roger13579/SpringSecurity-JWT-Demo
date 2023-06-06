@@ -7,6 +7,7 @@ import com.rogerli.springmall.model.ProductView;
 import com.rogerli.springmall.entity.Product;
 import com.rogerli.springmall.repository.ProductJpaDao;
 import com.rogerli.springmall.rowMapper.ProductRowMapper;
+import com.rogerli.springmall.util.OffsetBasedPageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,16 +34,18 @@ public class ProductDaoImpl implements ProductDao {
         if (productQueryParams.getCategory() == null){
             return productJpaDao.findAllByProductNameContaining(
                     productQueryParams.getSearch(),
-                    PageRequest.of(productQueryParams.getPageNumber()-1
-                            , productQueryParams.getLimit()
+                    new OffsetBasedPageRequest(productQueryParams.getLimit()
+                            , productQueryParams.getOffset()
+                            , (productQueryParams.getPageNumber()-1)
                             , Sort.by(productQueryParams.getOrderBy()).descending())
             );
         }else {
             return productJpaDao.findAllByCategoryAndProductNameContaining(
                     productQueryParams.getCategory().name(),
                     productQueryParams.getSearch(),
-                    PageRequest.of(productQueryParams.getPageNumber()-1
-                            , productQueryParams.getLimit()
+                    new OffsetBasedPageRequest(productQueryParams.getLimit()
+                            , productQueryParams.getOffset()
+                            , (productQueryParams.getPageNumber()-1)
                             , Sort.by(productQueryParams.getOrderBy()).descending())
             );
         }

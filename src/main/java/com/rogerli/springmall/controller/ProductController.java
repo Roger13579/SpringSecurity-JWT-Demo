@@ -30,12 +30,13 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<Page<Product>> getProducts(
             // Filtering
-            @RequestParam(defaultValue = "1=1") ProductCategory category,
+            ProductCategory category,
             @RequestParam(defaultValue = "") String search,
             // Sorting
             @RequestParam(defaultValue = "createdDate") String orderBy,
             // pagination
             @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
+            @RequestParam(defaultValue = "0") @Min(0) Integer offset,
             @RequestParam(defaultValue = "1") @Min(0) Integer pageNumber
     ){
         ProductQueryParams productQueryParams = new ProductQueryParams();
@@ -43,6 +44,7 @@ public class ProductController {
         productQueryParams.setSearch(search);
         productQueryParams.setOrderBy(orderBy);
         productQueryParams.setLimit(limit);
+        productQueryParams.setOffset(offset);
         productQueryParams.setPageNumber(pageNumber);
         // get productlist
         Page<Product> products = productService.getProducts(productQueryParams);

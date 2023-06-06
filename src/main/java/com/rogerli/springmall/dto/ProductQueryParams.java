@@ -10,5 +10,6 @@ public class ProductQueryParams {
     String orderBy;
     String sort;
     Integer limit;
+    Integer offset;
     Integer pageNumber;
 }

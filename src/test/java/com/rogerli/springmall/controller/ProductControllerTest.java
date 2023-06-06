@@ -27,7 +27,7 @@ public class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 查詢商品
     @Test
@@ -203,10 +203,8 @@ public class ProductControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limit", notNullValue()))
-                .andExpect(jsonPath("$.offset", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue()))
-                .andExpect(jsonPath("$.results", hasSize(5)));
+                .andExpect(jsonPath("$.pageable", notNullValue()))
+                .andExpect(jsonPath("$.content", hasSize(5)));
     }
 
     @Test
@@ -218,10 +216,8 @@ public class ProductControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limit", notNullValue()))
-                .andExpect(jsonPath("$.offset", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue()))
-                .andExpect(jsonPath("$.results", hasSize(2)));
+                .andExpect(jsonPath("$.pageable", notNullValue()))
+                .andExpect(jsonPath("$.content", hasSize(2)));
     }
 
     @Test
@@ -234,15 +230,13 @@ public class ProductControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limit", notNullValue()))
-                .andExpect(jsonPath("$.offset", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue()))
-                .andExpect(jsonPath("$.results", hasSize(5)))
-                .andExpect(jsonPath("$.results[0].productId", equalTo(6)))
-                .andExpect(jsonPath("$.results[1].productId", equalTo(5)))
-                .andExpect(jsonPath("$.results[2].productId", equalTo(7)))
-                .andExpect(jsonPath("$.results[3].productId", equalTo(4)))
-                .andExpect(jsonPath("$.results[4].productId", equalTo(2)));
+                .andExpect(jsonPath("$.pageable", notNullValue()))
+                .andExpect(jsonPath("$.content", hasSize(5)))
+                .andExpect(jsonPath("$.content[0].productId", equalTo(6)))
+                .andExpect(jsonPath("$.content[1].productId", equalTo(5)))
+                .andExpect(jsonPath("$.content[2].productId", equalTo(7)))
+                .andExpect(jsonPath("$.content[3].productId", equalTo(4)))
+                .andExpect(jsonPath("$.content[4].productId", equalTo(2)));
     }
 
     @Test
@@ -255,12 +249,10 @@ public class ProductControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limit", notNullValue()))
-                .andExpect(jsonPath("$.offset", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue()))
-                .andExpect(jsonPath("$.results", hasSize(2)))
-                .andExpect(jsonPath("$.results[0].productId", equalTo(5)))
-                .andExpect(jsonPath("$.results[1].productId", equalTo(4)));
+                .andExpect(jsonPath("$.pageable", notNullValue()))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].productId", equalTo(5)))
+                .andExpect(jsonPath("$.content[1].productId", equalTo(4)));
     }
 
 
