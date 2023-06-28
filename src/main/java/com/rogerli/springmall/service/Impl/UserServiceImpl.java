@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -79,6 +82,11 @@ public class UserServiceImpl implements UserService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
+    public boolean isLogin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication == null || authentication instanceof AnonymousAuthenticationToken);
+    }
+
 //    @Override
 //    public UserDetails login(UserLoginRequest userLoginRequest) {
 //        UserDetails userDetails = loadUserByUsername(userLoginRequest.getEmail());
