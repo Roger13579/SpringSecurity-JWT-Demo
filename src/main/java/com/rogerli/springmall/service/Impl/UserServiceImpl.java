@@ -4,9 +4,11 @@ import com.rogerli.springmall.constant.UserAuthority;
 import com.rogerli.springmall.dao.UserDao;
 import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.dto.UserRegisterRequest;
+import com.rogerli.springmall.dto.UserUpdateRequest;
 import com.rogerli.springmall.entity.Roles;
 import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.model.SecureUser;
+import com.rogerli.springmall.model.UserIdentity;
 import com.rogerli.springmall.repository.RoleJpaRepository;
 import com.rogerli.springmall.service.UserService;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,6 +39,9 @@ public class UserServiceImpl implements UserService{
     private UserDao userDao;
     @Autowired
     private RoleJpaRepository roleJpaRepository;
+    private UserIdentity userIdentity;
+    @Autowired
+    private PasswordEncoder getPasswordEncoder;
 
     @Override
     public User getUserById(Integer userId) {
@@ -55,11 +61,27 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterRequest.getEmail());
         user.setCreatedDate(now);
         user.setLastModifiedDate(now);
-        //使用MD5生成密碼的雜湊值
-        String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
+        //使用BCrypt生成密碼的雜湊值
+        String hashedPassword = getPasswordEncoder.encode(userRegisterRequest.getPassword());
         user.setPassword(hashedPassword);
 
         return userDao.createUser(user);
+    }
+    @Override
+    public User update(UserUpdateRequest userUpdateRequest, Authentication authentication) {
+        User checkUser = userDao.getUserByEmail(authentication.getName());
+        if (getPasswordEncoder.matches(userUpdateRequest.getPassword(),
+                checkUser.getPassword())) {
+            log.error("與舊密碼相同");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        String hashedPassword = getPasswordEncoder.encode(userUpdateRequest.getPassword());
+        Date now = new Date();
+        checkUser.setLastModifiedDate(now);
+        //使用MD5生成密碼的雜湊值
+        checkUser.setPassword(hashedPassword);
+
+        return userDao.createUser(checkUser);
     }
 
     @Override
@@ -87,26 +109,6 @@ public class UserServiceImpl implements UserService{
         return !(authentication == null || authentication instanceof AnonymousAuthenticationToken);
     }
 
-//    @Override
-//    public UserDetails login(UserLoginRequest userLoginRequest) {
-//        UserDetails userDetails = loadUserByUsername(userLoginRequest.getEmail());
-//        //檢查user是否存在
-//        if (userDetails.getUsername() == null) {
-//            log.error("該 email {} 尚未註冊", userLoginRequest.getEmail());
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-//        }
-//        //使用MD5比較密碼的雜湊值
-//        String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
-//
-//        //比較密碼
-//        if (userDetails.getPassword().equals(hashedPassword)) {
-//            return userDetails;
-//        } else {
-//            log.error("該登入 email {} 的密碼不正確", userLoginRequest.getEmail());
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
     @Override
     public User createUser(UserRegisterRequest userRegisterRequest){
         User checkUser = userDao.getUserByEmail(userRegisterRequest.getEmail());
@@ -126,12 +128,13 @@ public class UserServiceImpl implements UserService{
         user.setPassword(encryptPassword);
         userRegisterRequest.getAuthorities().forEach(
                 role ->{
+                    System.out.println(role);
                     switch (role){
-                        case "admin":
+                        case "ADMIN":
                             Roles admin = roleJpaRepository.findByRoleName(UserAuthority.ADMIN);
                             roles.add(admin);
                             break;
-                        case "normal":
+                        case "NORMAL":
                             Roles normal = roleJpaRepository.findByRoleName(UserAuthority.NORMAL);
                             roles.add(normal);
                             break;

@@ -37,6 +37,9 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
+            <a href="/products" class="nav-link">商品列表</a>
+            <a href="/login" class="nav-link" sec:authorize="hasAuthority('ADMIN')">新增商品</a>
+            <a href="/login" class="nav-link" sec:authorize="isAuthenticated()">我的訂單</a>
         </ul>
         <ul class="navbar-nav d-flex">
             <li class="nav-item">

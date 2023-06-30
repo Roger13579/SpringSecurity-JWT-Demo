@@ -2,26 +2,13 @@ package com.rogerli.springmall.dao.Impl;
 
 import com.rogerli.springmall.dao.ProductDao;
 import com.rogerli.springmall.dto.ProductQueryParams;
-import com.rogerli.springmall.dto.ProductRequest;
-import com.rogerli.springmall.model.ProductView;
 import com.rogerli.springmall.entity.Product;
 import com.rogerli.springmall.repository.ProductJpaDao;
-import com.rogerli.springmall.rowMapper.ProductRowMapper;
-import com.rogerli.springmall.util.OffsetBasedPageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class ProductDaoImpl implements ProductDao {
@@ -34,19 +21,17 @@ public class ProductDaoImpl implements ProductDao {
         if (productQueryParams.getCategory() == null){
             return productJpaDao.findAllByProductNameContaining(
                     productQueryParams.getSearch(),
-                    new OffsetBasedPageRequest(productQueryParams.getLimit()
-                            , productQueryParams.getOffset()
-                            , (productQueryParams.getPageNumber()-1)
-                            , Sort.by(productQueryParams.getOrderBy()).descending())
+                    PageRequest.of((productQueryParams.getPageNumber() - 1),
+                            productQueryParams.getLimit(),
+                            Sort.by(productQueryParams.getOrderBy()).descending())
             );
         }else {
             return productJpaDao.findAllByCategoryAndProductNameContaining(
                     productQueryParams.getCategory().name(),
                     productQueryParams.getSearch(),
-                    new OffsetBasedPageRequest(productQueryParams.getLimit()
-                            , productQueryParams.getOffset()
-                            , (productQueryParams.getPageNumber()-1)
-                            , Sort.by(productQueryParams.getOrderBy()).descending())
+                    PageRequest.of((productQueryParams.getPageNumber()-1),
+                            productQueryParams.getLimit(),
+                            Sort.by(productQueryParams.getOrderBy()).descending())
             );
         }
     }

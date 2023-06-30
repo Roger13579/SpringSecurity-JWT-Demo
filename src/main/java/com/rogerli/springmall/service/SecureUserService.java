@@ -19,10 +19,10 @@ public class SecureUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             User user = userDao.getUserByEmail(username);
-//            if (user == null) {
-//                System.out.println("該帳號不存在");
-//                throw new UsernameNotFoundException("該帳號不存在");
-//            }
+            if (user == null) {
+                System.out.println("該帳號不存在");
+                throw new UsernameNotFoundException("該帳號不存在");
+            }
             return new SecureUser(user);
         }catch (Exception e){
             throw new UsernameNotFoundException(username);

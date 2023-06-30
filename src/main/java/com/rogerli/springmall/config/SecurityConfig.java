@@ -62,7 +62,7 @@ public class SecurityConfig{
 //                .and()
                 .csrf().disable()
                 .formLogin()
-                .loginProcessingUrl("/signin")
+                .loginProcessingUrl("/login")
                 .loginPage("/login")
                 .permitAll()
                 .failureUrl("/login?error")

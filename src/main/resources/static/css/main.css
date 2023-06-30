@@ -20,3 +20,17 @@
     margin: 30px auto;
     padding: 30px 150px 30px 150px;
 }
+
+table,
+td {
+    border: 2px solid #333;
+}
+.title{
+    text-align: center
+}
+
+thead,
+tfoot {
+    background-color: #333;
+    color: #fff;
+}

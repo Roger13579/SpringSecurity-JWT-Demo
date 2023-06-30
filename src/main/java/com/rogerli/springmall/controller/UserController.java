@@ -26,11 +26,7 @@ public class UserController {
     private JWTService jwtService;
 
 
-    @PostMapping("/users/register")
-    public ResponseEntity<User> register(@RequestBody @Valid UserRegisterRequest userRegisterRequest){
-        User user = userService.createUser(userRegisterRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
+
 
     @PostMapping("/users/login")
     public ResponseEntity<User> login(@RequestBody @Valid UserLoginRequest userLoginRequest){

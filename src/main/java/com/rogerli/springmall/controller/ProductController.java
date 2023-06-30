@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +23,14 @@ import javax.validation.constraints.Min;
 import java.util.List;
 
 @Validated
-@RestController
+@Controller
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<Page<Product>> getProducts(
+    public String getProducts(
             // Filtering
             ProductCategory category,
             @RequestParam(defaultValue = "") String search,
@@ -36,21 +38,20 @@ public class ProductController {
             @RequestParam(defaultValue = "createdDate") String orderBy,
             // pagination
             @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
-            @RequestParam(defaultValue = "0") @Min(0) Integer offset,
-            @RequestParam(defaultValue = "1") @Min(0) Integer pageNumber
+            @RequestParam(defaultValue = "1") @Min(0) Integer pageNumber,
+            Model model
     ){
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
         productQueryParams.setOrderBy(orderBy);
         productQueryParams.setLimit(limit);
-        productQueryParams.setOffset(offset);
         productQueryParams.setPageNumber(pageNumber);
         // get productlist
         Page<Product> products = productService.getProducts(productQueryParams);
         products.getPageable();
-
-        return ResponseEntity.status(HttpStatus.OK).body(products);
+        model.addAttribute("products", products);
+        return "products";
     }
 
     @GetMapping("/products/{productId}")

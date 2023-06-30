@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>MyOrders</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div>
+        <form action="/products" method="get">
+            <label>
+                <input type="text" name="search">關鍵字
+            </label>
+            <label>
+                <input list="datalistId" name="orderBy">排序
+                <datalist id="datalistId">
+                    <option value="productId">
+                    <option value="productName">
+                    <option value="category">
+                    <option value="price">
+                    <option value="stock">
+                    <option value="createdDate">
+                    <option value="lastModifiedDate">
+                </datalist>
+            </label>
+            <label>
+                <input type="number" name="limit">顯示筆數
+            </label>
+            <label>
+                <input type="number" name="pageNumber">頁數
+            </label>
+            <button type="submit">查詢</button>
+        </form>
+    </div>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="9" style="text-align: center">
+                    商品列表
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="title">
+                <td>
+                    productId
+                </td>
+                <td>
+                    productName
+                </td>
+                <td>
+                    category
+                </td>
+                <td>
+                    imageUrl
+                </td>
+                <td>
+                    price
+                </td>
+                <td>
+                    stock
+                </td>
+                <td>
+                    description
+                </td>
+                <td>
+                    createdDate
+                </td>
+                <td>
+                    lastModifiedDate
+                </td>
+            </tr>
+            <tr th:each="product:${products.content}">
+                <td th:text="${product.productId}"></td>
+                <td th:text="${product.productName}"></td>
+                <td th:text="${product.category}"></td>
+                <td style="width: fit-content">
+                    <img style="height: 8em; width: 12em" th:src="${product.imageUrl}">
+                </td>
+                <td th:text="${product.price}"></td>
+                <td th:text="${product.stock}"></td>
+                <td th:text="${product.description}"></td>
+                <td th:text="${#dates.format(product.createdDate,'yyyy/MM/dd HH:mm:ss')}"></td>
+                <td th:text="${#dates.format(product.lastModifiedDate,'yyyy/MM/dd HH:mm:ss')}"></td>
+                <td>
+                    <form action="/checkorder" method="get">
+                        <input type="hidden" th:value="${product.productId}" name="id">
+                        <button type="submit">新增訂單</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

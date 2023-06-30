@@ -1,12 +1,6 @@
 var jq = $.noConflict();
 // $(document).ready(function () {
-//     $("#loginform").submit(function (event) {
-//         //stop submit the form, we will post it manually.
-//         event.preventDefault();
-//         event.stopImmediatePropagation();
-//         ajax_login();
-//     });
-//     $("#registerform").submit(function (event) {
+//     $("#registform").submit(function (event) {
 //         //stop submit the form, we will post it manually.
 //         event.preventDefault();
 //         event.stopImmediatePropagation();
@@ -29,20 +23,7 @@ var jq = $.noConflict();
 //     });
 // }
 //
-// function redirect(res) {
-//     jq.ajax({
-//         dataType: "html",
-//         method: "GET",
-//         url: "/index",
-//         headers : {
-//             "Authorization":"Bearer " + res["token"]
-//         },
-//         contentType: "application/json; charset=UTF-8",
-//         success:function (response){
-//             $("html").html($("html", response).html());
-//         }
-//     });
-// }
+
 // function ajax_register() {
 //     var dataObj = {};
 //     dataObj["email"] = $("#email").val();
