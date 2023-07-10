@@ -45,35 +45,30 @@
                     description
                 </td>
                 <td>
-                    createdDate
-                </td>
-                <td>
-                    lastModifiedDate
-                </td>
-                <td>
-                    確認訂單
+                    加入購物車
                 </td>
             </tr>
-            <form>
-                <tr th:object="product">
-                    <td th:text="${product.productId}"></td>
+            <form action="/orders/cart" method="post" th:object="${buyItem}">
+                <tr>
+                    <td>
+                        <label for="productId" th:text="${buyItem.productId}"></label>
+                        <input type="hidden" id="productId" name="productId" th:field="*{productId}">
+                    </td>
                     <td th:text="${product.productName}"></td>
                     <td th:text="${product.category}"></td>
                     <td style="width: fit-content">
-                        <img style="height: 8em; width: 12em" th:src="${product.imageUrl}">
+                        <img th:if="${product.imageUrl} != ''" style="height: 8em; width: 12em" th:src="${product.imageUrl}" alt="">
                     </td>
                     <td th:text="${product.price}"></td>
-                    <td th:text="${product.stock}">
+                    <td>
                         <label>
-                            <input type="number" name="stock">
+                            <input type="number" th:placeholder="${product.stock}" id="quantity" name="quantity"
+                                   th:field="*{quantity}">
                         </label>
                     </td>
                     <td th:text="${product.description}"></td>
                     <td>
-                        <form action="/products" method="get">
-                            <input type="hidden" th:value="${product.productId}" name="id">
-                            <button type="submit">新增</button>
-                        </form>
+                        <button type="submit">加入</button>
                     </td>
                 </tr>
             </form>

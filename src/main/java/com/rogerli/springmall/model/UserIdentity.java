@@ -26,10 +26,6 @@ public class UserIdentity {
         return getSecureUser().getUserId();
     }
 
-//    public String getName() {
-//        return getSecureUser().getName();
-//    }
-
     public String getEmail() {
         return getSecureUser().getUsername();
     }

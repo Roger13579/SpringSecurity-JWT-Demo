@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProductJpaDao extends JpaRepository<Product,Integer> {
 
     Product findByProductId(Integer prodyctId);
-    Page<Product> findAllByProductNameContaining(String productName, Pageable pageable);
-    Page<Product> findAllByCategoryAndProductNameContaining(String category, String productName, Pageable pageable);
+    Page<Product> findAllByProductNameContainingAndStockGreaterThan(String productName, Pageable pageable, Integer stock);
+    Page<Product> findAllByCategoryAndProductNameContainingAndStockGreaterThan(String category, String productName, Pageable pageable, Integer stock);
 
 }

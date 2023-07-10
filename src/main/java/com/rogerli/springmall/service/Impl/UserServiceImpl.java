@@ -123,12 +123,10 @@ public class UserServiceImpl implements UserService{
         user.setEmail(userRegisterRequest.getEmail());
         user.setCreatedDate(now);
         user.setLastModifiedDate(now);
-
         String encryptPassword = new BCryptPasswordEncoder().encode(userRegisterRequest.getPassword());
         user.setPassword(encryptPassword);
         userRegisterRequest.getAuthorities().forEach(
                 role ->{
-                    System.out.println(role);
                     switch (role){
                         case "ADMIN":
                             Roles admin = roleJpaRepository.findByRoleName(UserAuthority.ADMIN);

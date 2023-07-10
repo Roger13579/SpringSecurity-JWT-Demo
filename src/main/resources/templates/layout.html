@@ -25,7 +25,6 @@
             crossorigin="anonymous"></script>
 
     <!-- custom -->
-    <script type="text/javascript" th:src="@{/js/main.js}"></script>
     <link th:href="@{/css/main.css}" rel="stylesheet">
 </head>
 <body>
@@ -37,9 +36,11 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
+            <a href="/user" class="nav-link" sec:authorize="isAuthenticated()">UserPage</a>
             <a href="/products" class="nav-link">商品列表</a>
-            <a href="/login" class="nav-link" sec:authorize="hasAuthority('ADMIN')">新增商品</a>
-            <a href="/login" class="nav-link" sec:authorize="isAuthenticated()">我的訂單</a>
+            <a href="/addproduct" class="nav-link" sec:authorize="hasAuthority('ADMIN')">新增商品</a>
+            <a href="/orders/cart" class="nav-link" sec:authorize="hasAuthority('NORMAL')">購物車</a>
+            <a href="/orders" class="nav-link" sec:authorize="hasAuthority('NORMAL')">我的訂單</a>
         </ul>
         <ul class="navbar-nav d-flex">
             <li class="nav-item">

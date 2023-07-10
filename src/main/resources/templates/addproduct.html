@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>AddProduct</title>
+</head>
+<body>
+
+<div layout:fragment="content" th:object="${product}">
+    <form action="/products" method="post">
+        <input style="display: block" type="text" placeholder="ProductName" th:field="*{productName}" required>
+        <input style="display: block" list="datalistId" name="category" placeholder="Category" th:field="*{category}" required>
+        <datalist id="datalistId">
+            <option value="FOOD"></option>
+            <option value="CAR"></option>
+            <option value="E_BOOK"></option>
+        </datalist>
+        <input style="display: block" type="text" name="imageUrl" placeholder="ImageUrl" th:field="*{imageUrl}">
+        <input style="display: block" type="number" name="price" placeholder="Price" th:field="*{price}" required>
+        <input style="display: block" type="number" name="stock" placeholder="Stock" th:field="*{stock}" required>
+        <input style="display: block" type="text" name="description" placeholder="Description"
+               th:field="*{description}">
+        <button style="display: block" type="submit">新增</button>
+    </form>
+</div>
+
+</body>
+</html>

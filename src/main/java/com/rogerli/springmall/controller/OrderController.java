@@ -1,55 +1,74 @@
 package com.rogerli.springmall.controller;
 
+import com.rogerli.springmall.dto.BuyItem;
 import com.rogerli.springmall.dto.CreateOrderRequest;
 import com.rogerli.springmall.dto.OrderQueryParams;
+import com.rogerli.springmall.dto.UpdateOrderRequest;
+import com.rogerli.springmall.entity.Product;
 import com.rogerli.springmall.model.OrderView;
 import com.rogerli.springmall.service.OrderService;
 import com.rogerli.springmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
+@Controller
 public class OrderController {
 
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/users/orders")
-    public ResponseEntity<OrderView> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest){
-        Integer orderId = orderService.createOrder(createOrderRequest);
-
-        OrderView orderView = orderService.getOrderById(orderId);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderView);
+    @PostMapping("/orders")
+    public String createOrder(UpdateOrderRequest updateOrderRequest, Model model){
+        var iscart = false;
+        orderService.shoppingCartToOrder(updateOrderRequest, iscart);
+        return getOrders(model);
     }
 
-    @GetMapping("/users/orders")
-    public ResponseEntity<Page<OrderView>> getOrders(
-            @RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
-            @RequestParam(defaultValue = "0") @Min(0) Integer offset
-    ){
+    @GetMapping("/orders")
+    public String getOrders(Model model){
         OrderQueryParams orderQueryParams = new OrderQueryParams();
-        orderQueryParams.setLimit(limit);
-        orderQueryParams.setOffset(offset);
-
+        orderQueryParams.setIscart(false);
         // 取得orderlist
         List<OrderView> orderViewList = orderService.getOrders(orderQueryParams);
-
         // 取得訂單總數
         Integer count = orderService.countOrder(orderQueryParams);
-        Page<OrderView> page = new Page<>();
-        page.setLimit(limit);
-        page.setOffset(offset);
-        page.setTotal(count);
-        page.setResults(orderViewList);
+        model.addAttribute("count", count);
+        model.addAttribute("orderViewList", orderViewList);
+        return "myorders";
+    }
+    @GetMapping("/orders/cart")
+    public String shoppingCart(Model model){
+        var orderQueryParams = new OrderQueryParams();
+        orderQueryParams.setIscart(true);
+        // 取得orderlist
+        List<OrderView> orderViewList = orderService.getOrders(orderQueryParams);
+        model.addAttribute("orderViewList", orderViewList);
+        return "shoppingcart";
+    }
+    @PostMapping("/orders/cart")
+    public String AddToShoppingCart(@Valid BuyItem buyItem, Model model){
+        List<BuyItem> buyItemList = new ArrayList<>();
+        buyItemList.add(buyItem);
+        var createOrderRequest = new CreateOrderRequest();
+        var iscart = true;
+        createOrderRequest.setBuyItemList(buyItemList);
+        orderService.createOrder(createOrderRequest, iscart);
+        return shoppingCart(model);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(page);
+    @GetMapping("/orders/{orderId}/delete")
+    public String deleteOrder(@PathVariable Integer orderId, Model model){
+        orderService.deleteOrderById(orderId);
+        return shoppingCart(model);
     }
 }

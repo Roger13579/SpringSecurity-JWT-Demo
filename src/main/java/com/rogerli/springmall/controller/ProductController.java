@@ -1,11 +1,10 @@
 package com.rogerli.springmall.controller;
 
 import com.rogerli.springmall.constant.ProductCategory;
+import com.rogerli.springmall.dto.BuyItem;
 import com.rogerli.springmall.dto.ProductQueryParams;
 import com.rogerli.springmall.dto.ProductRequest;
 import com.rogerli.springmall.entity.Product;
-import com.rogerli.springmall.model.ProductView;
-import com.rogerli.springmall.rowMapper.ProductRowMapper;
 import com.rogerli.springmall.service.ProductService;
 //import com.rogerli.springmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.List;
 
 @Validated
 @Controller
@@ -54,42 +52,62 @@ public class ProductController {
         return "products";
     }
 
-    @GetMapping("/products/{productId}")
-    public ResponseEntity<ProductView> getProduct(@PathVariable Integer productId){
+    @GetMapping("/products/{productId}/{action}")
+    public String getProduct(@PathVariable Integer productId,
+                             @PathVariable String action,
+                             Model model){
         Product product = productService.getProductById(productId);
-
-        if (product != null){
-            return ResponseEntity.status(HttpStatus.OK).body(new ProductRowMapper().mapRow(product));
+        BuyItem buyItem = new BuyItem();
+        buyItem.setProductId(productId);
+        if (product == null){
+            model.addAttribute("error", "此商品已完售");
         }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            model.addAttribute("product", product);
+            model.addAttribute("buyItem", buyItem);
+        }
+        switch (action) {
+            case "update":
+                ProductRequest productRequest = new ProductRequest(product);
+                model.addAttribute("productRequest", productRequest);
+                return "updateproduct";
+            case "delete":
+                return deleteProduct(productId, model);
+            case "add":
+                return "checkorder";
+            default:
+                return null;
         }
     }
 
     @PostMapping("/products")
-    public ResponseEntity<ProductView> createProduct(@RequestBody @Valid ProductRequest productRequest){
-        Product product = productService.createProduct(productRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductRowMapper().mapRow(product));
+    public String createProduct(@Valid ProductRequest productRequest, Model model){
+        productService.createProduct(productRequest);
+        return getProducts(null, "", "createdDate", 5, 1, model);
     }
 
     @PutMapping("/products/{productId}")
-    public ResponseEntity<ProductView> updateProduct(@PathVariable Integer productId,
-                                                 @RequestBody @Valid ProductRequest productRequest){
+    public String updateProduct(@PathVariable Integer productId,
+                                @Valid ProductRequest productRequest,
+                                Model model){
         // 檢查product是否存在
         Product product = productService.getProductById(productId);
         if (product == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            model.addAttribute("error","查無此商品");
+            return "products";
+
         }
         // 修改商品的數據
-        Product updatedProduct = productService.updateProduct(product, productRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(new ProductRowMapper().mapRow(updatedProduct));
+        productService.updateProduct(product, productRequest);
+        return getProducts(null, "", "createdDate", 5, 1, model);
     }
 
     @DeleteMapping("/products/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId){
+    public String deleteProduct(@PathVariable Integer productId, Model model){
         Product product = productService.getProductById(productId);
         if (product != null){
-            productService.deleteProductById(productId);
+            product.setStock(0);
+            productService.deleteProductById(product);
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return getProducts(null, "", "createdDate", 5, 1, model);
     }
 }

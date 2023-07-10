@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderJpaDao extends JpaRepository<Orders,Long> {
+public interface OrderJpaDao extends JpaRepository<Orders,Integer> {
 
-    List<Orders> findByUserId(Integer userId);
+    List<Orders> findByUserIdAndIscartOrderByCreatedDateDesc(Integer userId, boolean iscart);
 
     List<Orders> findByOrderId(Integer orderId);
 

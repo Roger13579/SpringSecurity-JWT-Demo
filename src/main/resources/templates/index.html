@@ -13,10 +13,9 @@
 
 <div layout:fragment="content">
     <h1>Home Page</h1>
-    <span>Hi! </span>
+    <span>Hi!</span>
     <span sec:authorize="!isAuthenticated()">請登入</span>
     <span sec:authorize="isAuthenticated()" sec:authentication="name"></span>
-    <a href="/user" sec:authorize="isAuthenticated()">User Page</a>
 </div>
 
 </body>

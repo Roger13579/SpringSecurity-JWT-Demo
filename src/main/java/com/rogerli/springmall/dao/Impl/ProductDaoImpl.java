@@ -19,19 +19,21 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public Page<Product> getProducts(ProductQueryParams productQueryParams) {
         if (productQueryParams.getCategory() == null){
-            return productJpaDao.findAllByProductNameContaining(
+            return productJpaDao.findAllByProductNameContainingAndStockGreaterThan(
                     productQueryParams.getSearch(),
                     PageRequest.of((productQueryParams.getPageNumber() - 1),
                             productQueryParams.getLimit(),
-                            Sort.by(productQueryParams.getOrderBy()).descending())
+                            Sort.by(productQueryParams.getOrderBy()).descending()),
+                    0
             );
         }else {
-            return productJpaDao.findAllByCategoryAndProductNameContaining(
+            return productJpaDao.findAllByCategoryAndProductNameContainingAndStockGreaterThan(
                     productQueryParams.getCategory().name(),
                     productQueryParams.getSearch(),
                     PageRequest.of((productQueryParams.getPageNumber()-1),
                             productQueryParams.getLimit(),
-                            Sort.by(productQueryParams.getOrderBy()).descending())
+                            Sort.by(productQueryParams.getOrderBy()).descending()),
+                    0
             );
         }
     }
@@ -54,8 +56,9 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public void deleteProductById(Integer productId) {
-        productJpaDao.deleteById(productId);
+    public void deleteProductById(Product product) {
+//        productJpaDao.deleteById(productId);
+        productJpaDao.save(product);
     }
 
 }

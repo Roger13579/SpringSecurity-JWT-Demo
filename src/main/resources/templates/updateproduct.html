@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>UpdateProduct</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="10" style="text-align: center">
+                    商品列表
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="title">
+                <td>
+                    productId
+                </td>
+                <td>
+                    productName
+                </td>
+                <td>
+                    category
+                </td>
+                <td>
+                    imageUrl
+                </td>
+                <td>
+                    price
+                </td>
+                <td>
+                    stock
+                </td>
+                <td>
+                    description
+                </td>
+                <td>
+                    編輯
+                </td>
+            </tr>
+            <form th:action="@{/products/}+${buyItem.productId}" method="POST" th:object="${productRequest}">
+                <input type="hidden" name="_method" value="PUT"/>
+                <tr>
+                    <td th:text="${buyItem.productId}"></td>
+                    <td>
+                        <label>
+                            <input id="productName" name="productName" th:field="*{productName}">
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            <input list="datalistId" id="category" name="category" th:field="*{category}">
+                            <datalist id="datalistId">
+                                <option value="CAR"></option>
+                                <option value="FOOD"></option>
+                                <option value="E_BOOK"></option>
+                            </datalist>
+                        </label>
+                    </td>
+                    <td style="width: fit-content">
+                        <label>
+                            <input id="imageUrl" name="imageUrl" th:field="*{imageUrl}">
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            <input type="number" id="price" name="price" th:field="*{price}">
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            <input type="number" id="stock" name="stock" th:field="*{stock}">
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            <input type="text" id="description" name="description" th:field="*{description}">
+                        </label>
+                    </td>
+                    <td>
+                        <button type="submit">送出</button>
+                    </td>
+                </tr>
+            </form>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

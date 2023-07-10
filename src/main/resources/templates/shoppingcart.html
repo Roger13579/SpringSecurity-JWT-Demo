@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>MyOrders</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="9" style="text-align: center">
+                    購物車
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="title">
+                <td>
+                    orderId
+                </td>
+                <td>
+                    totalAmount
+                </td>
+                <td>
+                    createdDate
+                </td>
+                <td>
+                    lastModifiedDate
+                </td>
+                <td>
+                    product
+                </td>
+                <td>
+                    建立訂單
+                </td>
+                <td>
+                    移除
+                </td>
+
+            </tr>
+            <tr th:each="orderView:${orderViewList}">
+                <form action="/orders" method="post">
+                    <td>
+                        <label for="orderId" th:text="${orderView.orderId}"></label>
+                        <input type="hidden" id="orderId" name="orderId" th:value="${orderView.orderId}">
+                    </td>
+                    <td th:text="${orderView.totalAmount}"></td>
+                    <td th:text="${#dates.format(orderView.createdDate,'yyyy/MM/dd HH:mm:ss')}"></td>
+                    <td th:text="${#dates.format(orderView.lastModifiedDate,'yyyy/MM/dd HH:mm:ss')}"></td>
+                    <td>
+                <span th:each="orderItem:${orderView.orderItemViewList}">
+                    <span th:text="'商品名稱: ' + ${orderItem.productName}
+                + ' 價錢: ' + ${orderItem.amount}
+                + ' 總數: '"></span>
+                    <label>
+                        <input type="number" id="quantity" name="quantity" th:value="${orderItem.quantity}" th:placeholder="${orderItem.quantity}">
+                    </label><br>
+                    <input type="hidden" id="productId" name="productId" th:value="${orderItem.productId}">
+                </span>
+                    </td>
+                    <td>
+                        <button type="submit">建立訂單</button>
+                    </td>
+                </form>
+                <td>
+                    <a sec:authorize="hasAuthority('NORMAL')" th:href="@{/orders/}+${orderView.orderId}+@{/delete}">
+                        <button type="submit">移除</button>
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -30,7 +30,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public List<Orders> getOrders(OrderQueryParams orderQueryParams) {
-        return orderJpaDao.findByUserId(orderQueryParams.getUserId());
+        return orderJpaDao.findByUserIdAndIscartOrderByCreatedDateDesc(orderQueryParams.getUserId(), orderQueryParams.isIscart());
     }
 
     @Override
@@ -42,6 +42,11 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public void createOrderItem(List<OrderItem> orderItemList) {
         orderItemJpaDao.saveAll(orderItemList);
+    }
+
+    @Override
+    public void deleteOrder(Integer orderId) {
+        orderJpaDao.deleteById(orderId);
     }
 
     @Override
@@ -57,6 +62,10 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
         return orderItemJpaDao.findOrderItemByOrderIdJoinProduct(orderId);
+    }
+    @Override
+    public Orders updateOrderByOrderId(Orders orders) {
+        return orderJpaDao.save(orders);
     }
 
 }

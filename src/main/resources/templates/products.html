@@ -15,7 +15,7 @@
     <div>
         <form action="/products" method="get">
             <label>
-                <input type="text" name="search">關鍵字
+                <input type="text" name="search">商品名稱
             </label>
             <label>
                 <input list="datalistId" name="orderBy">排序
@@ -59,7 +59,7 @@
                     category
                 </td>
                 <td>
-                    imageUrl
+                    image
                 </td>
                 <td>
                     price
@@ -76,8 +76,11 @@
                 <td>
                     lastModifiedDate
                 </td>
-                <td>
+                <td sec:authorize="hasAuthority('NORMAL')">
                     新增訂單
+                </td>
+                <td sec:authorize="hasAuthority('ADMIN')">
+                    編輯商品
                 </td>
             </tr>
             <tr th:each="product:${products.content}">
@@ -85,18 +88,23 @@
                 <td th:text="${product.productName}"></td>
                 <td th:text="${product.category}"></td>
                 <td style="width: fit-content">
-                    <img style="height: 8em; width: 12em" th:src="${product.imageUrl}">
+                    <img th:if="${product.imageUrl} != ''" style="height: 8em; width: 12em" th:src="${product.imageUrl}">
                 </td>
                 <td th:text="${product.price}"></td>
                 <td th:text="${product.stock}"></td>
                 <td th:text="${product.description}"></td>
                 <td th:text="${#dates.format(product.createdDate,'yyyy/MM/dd HH:mm:ss')}"></td>
                 <td th:text="${#dates.format(product.lastModifiedDate,'yyyy/MM/dd HH:mm:ss')}"></td>
-                <td>
-                    <form action="/products" method="get">
-                        <input type="hidden" th:value="${product.productId}" name="id">
+                <td sec:authorize="isAuthenticated()">
+                    <a sec:authorize="hasAuthority('NORMAL')" th:href="@{/products/}+${product.productId}+@{/add}">
                         <button type="submit">新增</button>
-                    </form>
+                    </a>
+                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/products/}+${product.productId}+@{/update}">
+                        <button type="submit">編輯商品</button>
+                    </a>
+                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/products/}+${product.productId}+@{/delete}">
+                        <button type="submit">刪除商品</button>
+                    </a>
                 </td>
             </tr>
             </tbody>

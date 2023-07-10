@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<div layout:fragment="content" >
+<div layout:fragment="content">
     <span>Hi! </span><span sec:authentication="name"></span>
     <div class="card login-panel">
         <div class="text-center">
@@ -19,16 +19,18 @@
                 <div class="h3">修改密碼</div>
             </div>
         </div>
-        <form method="post" th:action="@{/update}" th:object="${user}">
+        <form method="post" th:action="@{/users/update}" th:object="${user}">
             <div class="form-group">
-                <label for="password">輸入新密碼</label>
-                <input type="password" class="form-control" id="newpassword" name="password" placeholder="Password" th:field="*{password}">
+                <label for="password">輸入新密碼
+                    <input type="password" class="form-control" id="newpassword" name="password" placeholder="Password"
+                           th:field="*{password}">
+                </label>
             </div>
             <div th:if="${error != null}" class="alert alert-danger">
-                <div th:text="${error}" ></div>
+                <div th:text="${error}"></div>
             </div>
             <div th:if="${success != null}" class="alert alert-danger">
-                <div th:text="${success}" ></div>
+                <div th:text="${success}"></div>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">送出</button>
@@ -44,11 +46,13 @@
         <form method="post" th:action="@{/users/register}" th:object="${register}">
             <div class="form-group">
                 <label for="email">信箱</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email" th:field="*{email}">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email"
+                       th:field="*{email}">
             </div>
             <div class="form-group">
                 <label for="password">密碼</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password" th:field="*{password}">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                       th:field="*{password}">
             </div>
             <div class="form-group">
                 <input type="hidden" value="ADMIN" class="form-control" id="authorities" name="authorities">

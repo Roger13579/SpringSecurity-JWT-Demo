@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface OrderItemJpaDao extends JpaRepository<OrderItem,Long> {
 
-    @Query("SELECT new OrderItem(oi.orderItemId, oi.orderId, oi.productId,oi.amount, " +
-            "oi.quantity, p.productName, p.imageUrl) " +
+    @Query("SELECT new OrderItem(oi.orderItemId, oi.orderId, oi.productId,oi.quantity, " +
+            "oi.amount, p.productName, p.imageUrl) " +
             "FROM OrderItem as oi " +
             "LEFT JOIN Product as p ON oi.productId = p.productId " +
             "WHERE oi.orderId = :orderId ")

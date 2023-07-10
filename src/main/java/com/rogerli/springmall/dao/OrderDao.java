@@ -13,8 +13,11 @@ public interface OrderDao {
     Integer createOrder(Orders orders);
 
     void createOrderItem(List<OrderItem> orderItemViewList);
+    void deleteOrder(Integer orderId);
 
     Orders getOrderByOrderId(Integer orderId);
 
     List<OrderItem> getOrderItemsByOrderId(Integer orderId);
+
+    Orders updateOrderByOrderId(Orders orders);
 }
