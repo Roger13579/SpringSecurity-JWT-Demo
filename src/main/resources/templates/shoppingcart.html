@@ -60,7 +60,7 @@
                 + ' 價錢: ' + ${orderItem.amount}
                 + ' 總數: '"></span>
                     <label>
-                        <input type="number" id="quantity" name="quantity" th:value="${orderItem.quantity}" th:placeholder="${orderItem.quantity}">
+                        <input type="number" id="quantity" name="quantity" th:value="${orderItem.quantity}" th:placeholder="${orderItem.quantity}" min="1">
                     </label><br>
                     <input type="hidden" id="productId" name="productId" th:value="${orderItem.productId}">
                 </span>

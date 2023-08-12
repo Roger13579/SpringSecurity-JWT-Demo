@@ -64,6 +64,14 @@ public class OrderDaoImpl implements OrderDao {
         return orderItemJpaDao.findOrderItemByOrderIdJoinProduct(orderId);
     }
     @Override
+    public OrderItem getOrderItemByOrderId(Integer orderId) {
+        return orderItemJpaDao.findOrderItemByOrderId(orderId);
+    }
+    @Override
+    public void updateOrderItem(OrderItem orderItem) {
+        orderItemJpaDao.save(orderItem);
+    }
+    @Override
     public Orders updateOrderByOrderId(Orders orders) {
         return orderJpaDao.save(orders);
     }

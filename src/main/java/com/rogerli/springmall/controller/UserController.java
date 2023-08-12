@@ -81,9 +81,9 @@ public class UserController {
             log.error("",e);
             model.addAttribute("error",
                     "與舊密碼相同，請重新輸入");
-            return homeController.userPage(model, authentication);
+            return homeController.userPage(model);
         }
         model.addAttribute("success","修改成功");
-        return homeController.userPage(model, authentication);
+        return homeController.userPage(model);
     }
 }

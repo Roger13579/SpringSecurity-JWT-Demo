@@ -48,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Integer createOrder(CreateOrderRequest createOrderRequest, boolean iscart) {
         Integer userId = getUserId();
+        System.out.println(userId);
         int totalAmount = 0;
         List<OrderItem> orderItemList = new ArrayList<>();
         for (BuyItem buyItem : createOrderRequest.getBuyItemList()){
@@ -114,6 +115,11 @@ public class OrderServiceImpl implements OrderService {
         orders.setIscart(iscart);
         orders.setLastModifiedDate(new Date());
         orderDao.updateOrderByOrderId(orders);
+        // 更新orderitem
+        OrderItem item = orderDao.getOrderItemByOrderId(updateOrderRequest.getOrderId());
+        item.setQuantity(updateOrderRequest.getQuantity());
+        item.setAmount(product.getPrice()*item.getQuantity());
+        orderDao.updateOrderItem(item);
     }
 
     @Override
@@ -126,7 +132,8 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItemView> orderItemViews = orderItemList.stream().map(OrderItemRowMapper::mapOrderItem).collect(Collectors.toList());
             orderView.setOrderItemViewList(orderItemViews);
         }
-        return orderViewList;
+
+        return orderViewList.stream().filter(o -> !o.getOrderItemViewList().isEmpty()).collect(Collectors.toList());
     }
 
     @Override

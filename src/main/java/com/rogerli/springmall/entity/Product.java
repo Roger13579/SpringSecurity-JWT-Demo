@@ -31,7 +31,7 @@ public class Product {
     private Date lastModifiedDate;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", orphanRemoval = true)
     @JsonIgnore
     private List<OrderItem> orderItem;
 

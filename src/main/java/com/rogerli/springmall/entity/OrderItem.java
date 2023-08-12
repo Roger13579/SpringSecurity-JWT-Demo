@@ -21,7 +21,7 @@ public class OrderItem {
     private Integer amount;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "product_id",insertable = false,updatable = false)
     private Product product;
 

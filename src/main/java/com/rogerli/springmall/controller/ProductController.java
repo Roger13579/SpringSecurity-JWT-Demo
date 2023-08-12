@@ -105,7 +105,7 @@ public class ProductController {
     public String deleteProduct(@PathVariable Integer productId, Model model){
         Product product = productService.getProductById(productId);
         if (product != null){
-            product.setStock(0);
+//            product.setStock(0);
             productService.deleteProductById(product);
         }
         return getProducts(null, "", "createdDate", 5, 1, model);

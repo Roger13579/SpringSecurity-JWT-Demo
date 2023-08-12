@@ -19,5 +19,9 @@ public interface OrderDao {
 
     List<OrderItem> getOrderItemsByOrderId(Integer orderId);
 
+    OrderItem getOrderItemByOrderId(Integer orderId);
+
     Orders updateOrderByOrderId(Orders orders);
+
+    void updateOrderItem(OrderItem orderItem);
 }

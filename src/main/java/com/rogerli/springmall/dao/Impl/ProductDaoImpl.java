@@ -57,8 +57,8 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public void deleteProductById(Product product) {
-//        productJpaDao.deleteById(productId);
-        productJpaDao.save(product);
+        productJpaDao.deleteById(product.getProductId());
+//        productJpaDao.save(product);
     }
 
 }

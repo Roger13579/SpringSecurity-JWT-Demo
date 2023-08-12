@@ -18,6 +18,7 @@ public interface OrderItemJpaDao extends JpaRepository<OrderItem,Long> {
             "WHERE oi.orderId = :orderId ")
     List<OrderItem> findOrderItemByOrderIdJoinProduct(@Param("orderId") int orderId);
 
+    OrderItem findOrderItemByOrderId(int orderId);
 
 
 }
