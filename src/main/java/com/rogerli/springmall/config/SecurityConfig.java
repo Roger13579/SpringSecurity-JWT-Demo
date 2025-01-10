@@ -26,11 +26,11 @@ public class SecurityConfig{
     @Bean
     public UserDetailsService userDetailsService(){
         return new SecureUserService();
-    };
+    }
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter(){
         return new JWTAuthenticationFilter();
-    };
+    }
     @Bean
     PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();

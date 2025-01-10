@@ -44,8 +44,8 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Orders getOrderByOrderId(Integer orderId) {
         List<Orders> ordersList = orderJpaDao.findByOrderId(orderId);
-        if (ordersList.size() > 0) {
-            return ordersList.get(0);
+        if (!ordersList.isEmpty()) {
+            return ordersList.getFirst();
         }else {
             return null;
         }
