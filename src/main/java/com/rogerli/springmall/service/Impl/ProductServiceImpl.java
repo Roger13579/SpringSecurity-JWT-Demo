@@ -4,16 +4,11 @@ import com.rogerli.springmall.dao.ProductDao;
 import com.rogerli.springmall.dto.ProductQueryParams;
 import com.rogerli.springmall.dto.ProductRequest;
 import com.rogerli.springmall.entity.Product;
-import com.rogerli.springmall.model.ProductView;
 import com.rogerli.springmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class ProductServiceImpl implements ProductService {

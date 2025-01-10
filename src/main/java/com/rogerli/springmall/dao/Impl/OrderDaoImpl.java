@@ -4,19 +4,11 @@ import com.rogerli.springmall.dao.OrderDao;
 import com.rogerli.springmall.dto.OrderQueryParams;
 import com.rogerli.springmall.entity.OrderItem;
 import com.rogerli.springmall.entity.Orders;
-import com.rogerli.springmall.model.OrderItemView;
 import com.rogerli.springmall.repository.OrderItemJpaDao;
 import com.rogerli.springmall.repository.OrderJpaDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Component

@@ -3,18 +3,16 @@ package com.rogerli.springmall.config;
 import com.rogerli.springmall.constant.UserAuthority;
 import com.rogerli.springmall.filter.JWTAuthenticationFilter;
 import com.rogerli.springmall.service.SecureUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,25 +47,29 @@ public class SecurityConfig{
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/*").permitAll()
-                .antMatchers(HttpMethod.GET, "/orders**").hasAuthority(UserAuthority.NORMAL.name())
-                .antMatchers(HttpMethod.POST, "/orders").hasAuthority(UserAuthority.NORMAL.name())
-                .antMatchers(HttpMethod.GET, "/products").permitAll()
-                .antMatchers(HttpMethod.POST, "/products").hasAuthority(UserAuthority.ADMIN.name())
-                .antMatchers("/css/main.css").permitAll()
-                .anyRequest().authenticated()
-                .and()
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers(HttpMethod.GET, "/**").permitAll()
+                                .requestMatchers("/css/main.css").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/orders**").hasAuthority(UserAuthority.NORMAL.name())
+                                .requestMatchers(HttpMethod.POST, "/orders").hasAuthority(UserAuthority.NORMAL.name())
+                                .requestMatchers(HttpMethod.GET, "/products").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/products").hasAuthority(UserAuthority.ADMIN.name())
+                                .requestMatchers(HttpMethod.POST, "/users/register").permitAll()
+                                .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .csrf().disable()
-                .formLogin()
-                .loginProcessingUrl("/login")
-                .loginPage("/login")
-                .permitAll()
-                .failureUrl("/login?error")
-                .and()
-                .logout()
-                .permitAll();
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .formLogin(formLogin ->
+                        formLogin.loginPage("/login")
+                                .loginProcessingUrl("/users/login")
+                                .defaultSuccessUrl("/user")
+                                .permitAll()
+                                .failureUrl("/login?error"))
+                                .logout(logout ->
+                                        logout.logoutUrl("/logout").permitAll()
+                                );
         return http.build();
     }
     @Bean

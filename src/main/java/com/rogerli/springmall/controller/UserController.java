@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -53,9 +53,9 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> parseToken(@RequestBody Map<String, String> request) {
         String token = request.get("token");
         Map<String, Object> response = jwtService.parseToken(token);
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
     @PostMapping("/users/register")
     public String register(@Valid UserRegisterRequest userRegisterRequest, @RequestParam("authorities") String[] authorities, Model model){
         userRegisterRequest.setAuthorities(Arrays.asList(authorities));

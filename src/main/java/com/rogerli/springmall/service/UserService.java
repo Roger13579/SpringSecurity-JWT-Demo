@@ -5,7 +5,6 @@ import com.rogerli.springmall.dto.UserRegisterRequest;
 import com.rogerli.springmall.dto.UserUpdateRequest;
 import com.rogerli.springmall.entity.User;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
 

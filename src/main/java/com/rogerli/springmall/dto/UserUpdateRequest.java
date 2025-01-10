@@ -2,8 +2,7 @@ package com.rogerli.springmall.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class UserUpdateRequest {

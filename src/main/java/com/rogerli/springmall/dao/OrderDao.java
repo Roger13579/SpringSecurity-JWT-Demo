@@ -3,7 +3,6 @@ package com.rogerli.springmall.dao;
 import com.rogerli.springmall.dto.OrderQueryParams;
 import com.rogerli.springmall.entity.OrderItem;
 import com.rogerli.springmall.entity.Orders;
-import com.rogerli.springmall.model.OrderItemView;
 
 import java.util.List;
 

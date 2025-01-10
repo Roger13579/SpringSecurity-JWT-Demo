@@ -7,7 +7,6 @@ import com.rogerli.springmall.dto.UserRegisterRequest;
 import com.rogerli.springmall.dto.UserUpdateRequest;
 import com.rogerli.springmall.entity.Roles;
 import com.rogerli.springmall.entity.User;
-import com.rogerli.springmall.model.SecureUser;
 import com.rogerli.springmall.model.UserIdentity;
 import com.rogerli.springmall.repository.RoleJpaRepository;
 import com.rogerli.springmall.service.UserService;
@@ -17,11 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -29,7 +24,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class UserServiceImpl implements UserService{
