@@ -1,8 +1,9 @@
 package com.rogerli.springmall.exception;
 
-/**
- * Exception thrown when attempting to order more items than available in stock
- */
+
+import lombok.Getter;
+
+@Getter
 public class InsufficientStockException extends RuntimeException {
 
     private Integer productId;
@@ -21,15 +22,4 @@ public class InsufficientStockException extends RuntimeException {
         this.availableStock = availableStock;
     }
 
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public Integer getRequestedQuantity() {
-        return requestedQuantity;
-    }
-
-    public Integer getAvailableStock() {
-        return availableStock;
-    }
 }

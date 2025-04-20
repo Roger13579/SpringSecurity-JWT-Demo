@@ -3,7 +3,6 @@ package com.rogerli.springmall.controller;
 import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.dto.UserRegisterRequest;
 import com.rogerli.springmall.dto.UserUpdateRequest;
-import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.service.JWTService;
 import com.rogerli.springmall.service.UserService;
 import org.slf4j.Logger;

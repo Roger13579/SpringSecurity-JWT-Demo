@@ -2,7 +2,6 @@ package com.rogerli.springmall.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rogerli.springmall.constant.UserAuthority;
-import com.rogerli.springmall.dto.UserLoginRequest;
 import com.rogerli.springmall.entity.Roles;
 import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.repository.RoleJpaRepository;
@@ -40,7 +39,6 @@ public class BaseTest {
     @Autowired
     private UserJpaDao userJpaDao;
     protected HttpHeaders httpHeaders;
-    protected final ObjectMapper mapper = new ObjectMapper();
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final String USER_PASSWORD = "123456";
 
