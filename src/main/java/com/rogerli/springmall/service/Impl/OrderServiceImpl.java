@@ -14,8 +14,8 @@ import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.model.OrderView;
 import com.rogerli.springmall.model.OrderItemView;
 import com.rogerli.springmall.model.UserIdentity;
-import com.rogerli.springmall.rowMapper.OrderItemRowMapper;
-import com.rogerli.springmall.rowMapper.OrderRowMapper;
+import com.rogerli.springmall.mapper.OrderItemMapper;
+import com.rogerli.springmall.mapper.OrderMapper;
 import com.rogerli.springmall.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,10 +126,10 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderView> getOrders(OrderQueryParams orderQueryParams) {
         orderQueryParams.setUserId(userIdentity.getId());
         List<Orders> orderList = orderDao.getOrders(orderQueryParams);
-        List<OrderView> orderViewList = orderList.stream().map(OrderRowMapper::mapOrder).collect(Collectors.toList());
+        List<OrderView> orderViewList = orderList.stream().map(OrderMapper::mapOrder).collect(Collectors.toList());
         for (OrderView orderView : orderViewList){
             List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderView.getOrderId());
-            List<OrderItemView> orderItemViews = orderItemList.stream().map(OrderItemRowMapper::mapOrderItem).collect(Collectors.toList());
+            List<OrderItemView> orderItemViews = orderItemList.stream().map(OrderItemMapper::mapOrderItem).collect(Collectors.toList());
             orderView.setOrderItemViewList(orderItemViews);
         }
 
@@ -145,9 +145,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderView getOrderById(Integer orderId) {
         Orders order = orderDao.getOrderByOrderId(orderId);
-        OrderView orderView = OrderRowMapper.mapOrder(order);
+        OrderView orderView = OrderMapper.mapOrder(order);
         List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
-        List<OrderItemView> orderItemViews = orderItemList.stream().map(OrderItemRowMapper::mapOrderItem).collect(Collectors.toList());
+        List<OrderItemView> orderItemViews = orderItemList.stream().map(OrderItemMapper::mapOrderItem).collect(Collectors.toList());
         orderView.setOrderItemViewList(orderItemViews);
         return orderView;
     }

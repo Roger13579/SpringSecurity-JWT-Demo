@@ -34,7 +34,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null){
             String accessToken = authHeader.replace("Bearer ", "");
             Map<String, Object> claims = jwtService.parseToken(accessToken);
-            String userEmail = (String) claims.get("username");
+            String userEmail = (String) claims.get("sub");
             UserDetails user = userDetailsService.loadUserByUsername(userEmail);
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

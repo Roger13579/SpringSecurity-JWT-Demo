@@ -36,14 +36,8 @@ public class UserController {
     private HomeController homeController;
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping("/users/login")
-    public ResponseEntity<User> login(@RequestBody @Valid UserLoginRequest userLoginRequest){
-        User user = userService.login(userLoginRequest);
-        return  ResponseEntity.status(HttpStatus.OK).body(user);
-    }
-
     @PostMapping("/users/auth")
-    public ResponseEntity<Map<String, String>> issueToken(@Valid @RequestBody UserLoginRequest request) {
+    public ResponseEntity<Map<String, String>> issueToken(@Valid UserLoginRequest request) {
         String token = jwtService.generateToken(request);
         Map<String, String> response = Collections.singletonMap("token", token);
         return ResponseEntity.status(HttpStatus.OK).body(response);

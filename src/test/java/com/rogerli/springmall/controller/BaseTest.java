@@ -7,12 +7,14 @@ import com.rogerli.springmall.entity.Roles;
 import com.rogerli.springmall.entity.User;
 import com.rogerli.springmall.repository.RoleJpaRepository;
 import com.rogerli.springmall.repository.UserJpaDao;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,6 +27,7 @@ import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @AutoConfigureMockMvc
 @SpringBootTest
 public class BaseTest {
@@ -42,11 +45,20 @@ public class BaseTest {
     private final String USER_PASSWORD = "123456";
 
     protected User createUser_Admin() {
+        // Check if user already exists
+        User existingUser = userJpaDao.findByEmail("roger@gmail.com");
+        if (existingUser != null) {
+            return existingUser;
+        }
+
+        // Create new user if it doesn't exist
         User user = new User();
         Set<Roles> set = new HashSet<>();
         Roles admin = roleJpaRepository.findByRoleName(UserAuthority.ADMIN);
+        Roles normal = roleJpaRepository.findByRoleName(UserAuthority.NORMAL);
         Date now = new Date();
         set.add(admin);
+        set.add(normal);
         user.setEmail("roger@gmail.com");
         user.setPassword(passwordEncoder.encode(USER_PASSWORD));
         user.setAuthorities(set);
@@ -54,24 +66,24 @@ public class BaseTest {
         user.setLastModifiedDate(now);
         return userJpaDao.save(user);
     }
+
     @BeforeEach
     protected void login() throws Exception {
         httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Type", "application/json");
         User userAdmin = createUser_Admin();
-        UserLoginRequest authReq = new UserLoginRequest();
-        authReq.setEmail(userAdmin.getEmail());
-        authReq.setPassword(USER_PASSWORD);
-        RequestBuilder authRequestBuilder = MockMvcRequestBuilders
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/users/auth")
-                .headers(httpHeaders)
-                .content(mapper.writeValueAsString(authReq));
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("email", userAdmin.getEmail()) // Invalid email format
+                .param("password", USER_PASSWORD);
 
-        MvcResult result = mockMvc.perform(authRequestBuilder)
+        MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andReturn();
         JSONObject tokenRes = new JSONObject(result.getResponse().getContentAsString());
         String accessToken = tokenRes.getString("token");
+        log.info("accessToken:{}", accessToken);
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
     }
 

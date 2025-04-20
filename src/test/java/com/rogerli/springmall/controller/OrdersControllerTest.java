@@ -1,8 +1,6 @@
 package com.rogerli.springmall.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rogerli.springmall.dto.BuyItem;
-import com.rogerli.springmall.dto.CreateOrderRequest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,185 +9,154 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import java.util.*;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+/**
+ * Integration tests for the {@link OrderController} REST controller.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OrdersControllerTest extends BaseTest{
+public class OrdersControllerTest extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    // 創建使用者後新增訂單
+    /**
+     * Test retrieving all orders.
+     * Verifies that the endpoint returns the correct view name and model attributes.
+     */
     @Test
-    public void createOrder_JWTAuth() throws Exception {
-        CreateOrderRequest createOrderRequest = new CreateOrderRequest();
-        List<BuyItem> buyItemList = new ArrayList<>();
-
-        BuyItem buyItem1 = new BuyItem();
-        buyItem1.setProductId(1);
-        buyItem1.setQuantity(1);
-        buyItemList.add(buyItem1);
-
-        BuyItem buyItem2 = new BuyItem();
-        buyItem2.setProductId(2);
-        buyItem2.setQuantity(1);
-        buyItemList.add(buyItem2);
-
-        createOrderRequest.setBuyItemList(buyItemList);
-
-        String json = objectMapper.writeValueAsString(createOrderRequest);
-
+    @DisplayName("Should return all orders with correct view and model attributes")
+    public void shouldReturnAllOrders() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/orders")
-                .headers(httpHeaders)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().is(201))
-                .andExpect(jsonPath("$.orderId", notNullValue()))
-                .andExpect(jsonPath("$.userId", equalTo(3)))
-                .andExpect(jsonPath("$.totalAmount", equalTo(330)))
-                .andExpect(jsonPath("$.orderItemViewList", hasSize(2)))
-                .andExpect(jsonPath("$.createdDate", notNullValue()))
-                .andExpect(jsonPath("$.lastModifiedDate", notNullValue()));
-    }
-
-    @Test
-    public void createOrder_illegalArgument_emptyBuyItemList() throws Exception {
-        CreateOrderRequest createOrderRequest = new CreateOrderRequest();
-        List<BuyItem> buyItemList = new ArrayList<>();
-        createOrderRequest.setBuyItemList(buyItemList);
-
-        String json = objectMapper.writeValueAsString(createOrderRequest);
-
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/orders")
-                .headers(httpHeaders)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().is(400));
-    }
-
-    @Test
-    public void createOrder_userNotExist() throws Exception {
-        CreateOrderRequest createOrderRequest = new CreateOrderRequest();
-        List<BuyItem> buyItemList = new ArrayList<>();
-
-        BuyItem buyItem1 = new BuyItem();
-        buyItem1.setProductId(1);
-        buyItem1.setQuantity(1);
-        buyItemList.add(buyItem1);
-
-        createOrderRequest.setBuyItemList(buyItemList);
-
-        String json = objectMapper.writeValueAsString(createOrderRequest);
-
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/orders")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().is(400));
-    }
-
-    @Test
-    public void createOrder_productNotExist() throws Exception {
-        CreateOrderRequest createOrderRequest = new CreateOrderRequest();
-        List<BuyItem> buyItemList = new ArrayList<>();
-
-        BuyItem buyItem1 = new BuyItem();
-        buyItem1.setProductId(100);
-        buyItem1.setQuantity(1);
-        buyItemList.add(buyItem1);
-
-        createOrderRequest.setBuyItemList(buyItemList);
-
-        String json = objectMapper.writeValueAsString(createOrderRequest);
-
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/orders")
-                .headers(httpHeaders)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().is(400));
-    }
-
-    @Test
-    public void createOrder_stockNotEnough() throws Exception {
-        CreateOrderRequest createOrderRequest = new CreateOrderRequest();
-        List<BuyItem> buyItemList = new ArrayList<>();
-
-        BuyItem buyItem1 = new BuyItem();
-        buyItem1.setProductId(1);
-        buyItem1.setQuantity(10000);
-        buyItemList.add(buyItem1);
-
-        createOrderRequest.setBuyItemList(buyItemList);
-
-        String json = objectMapper.writeValueAsString(createOrderRequest);
-
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/orders")
-                .headers(httpHeaders)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().is(400));
-    }
-
-    // 查詢訂單列表
-    @Test
-    public void getOrders() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/users/orders")
+                .get("/orders")
                 .headers(httpHeaders);
+
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limit", notNullValue()))
-                .andExpect(jsonPath("$.offset", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue()))
-                .andExpect(jsonPath("$.results", hasSize(2)))
-                .andExpect(jsonPath("$.results[0].orderId", notNullValue()))
-                .andExpect(jsonPath("$.results[0].userId", equalTo(3)))
-                .andExpect(jsonPath("$.results[0].totalAmount", equalTo(500690)))
-                .andExpect(jsonPath("$.results[0].orderItemViewList", hasSize(3)))
-                .andExpect(jsonPath("$.results[0].createdDate", notNullValue()))
-                .andExpect(jsonPath("$.results[0].lastModifiedDate", notNullValue()))
-                .andExpect(jsonPath("$.results[1].orderId", notNullValue()))
-                .andExpect(jsonPath("$.results[1].userId", equalTo(3)))
-                .andExpect(jsonPath("$.results[1].totalAmount", equalTo(100000)))
-                .andExpect(jsonPath("$.results[1].orderItemViewList", hasSize(1)))
-                .andExpect(jsonPath("$.results[1].createdDate", notNullValue()))
-                .andExpect(jsonPath("$.results[1].lastModifiedDate", notNullValue()));
+                .andExpect(view().name("myorders"))
+                .andExpect(model().attributeExists("orderViewList"))
+                .andExpect(model().attributeExists("count"));
     }
 
+    /**
+     * Test retrieving the shopping cart.
+     * Verifies that the endpoint returns the correct view name and model attributes.
+     */
     @Test
-    public void getOrders_pagination() throws Exception {
+    @DisplayName("Should return shopping cart with correct view and model attributes")
+    public void shouldReturnShoppingCart() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/users/orders")
-                .headers(httpHeaders)
-                .param("limit", "2")
-                .param("offset", "2");
+                .get("/orders/cart")
+                .headers(httpHeaders);
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limit", notNullValue()))
-                .andExpect(jsonPath("$.offset", notNullValue()))
-                .andExpect(jsonPath("$.total", notNullValue()))
-                .andExpect(jsonPath("$.results", hasSize(2)));
+                .andExpect(view().name("shoppingcart"))
+                .andExpect(model().attributeExists("orderViewList"));
+    }
+
+    /**
+     * Test adding an item to the shopping cart.
+     * Verifies that the endpoint returns the correct view name and model attributes.
+     */
+    @Test
+    @Transactional
+    @DisplayName("Should add item to shopping cart and return correct view")
+    public void shouldAddItemToShoppingCart() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/orders/cart")
+                .headers(httpHeaders)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("productId", "1") // Valid product ID
+                .param("quantity", "1");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(view().name("shoppingcart"))
+                .andExpect(model().attributeExists("orderViewList"));
+    }
+
+    /**
+     * Test adding an item to the shopping cart with invalid product ID.
+     * Verifies that the endpoint returns a 4xx error.
+     */
+    @Test
+    @Transactional
+    @DisplayName("Should return error when adding non-existent product to cart")
+    public void shouldReturnErrorWhenAddingNonExistentProductToCart() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/orders/cart")
+                .headers(httpHeaders)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("productId", "999") // Non-existent product ID
+                .param("quantity", "1");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().is4xxClientError());
+    }
+
+    /**
+     * Test adding an item to the shopping cart with insufficient stock.
+     * Verifies that the endpoint returns a 4xx error.
+     */
+    @Test
+    @Transactional
+    @DisplayName("Should return error when adding item with insufficient stock")
+    public void shouldReturnErrorWhenAddingItemWithInsufficientStock() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/orders/cart")
+                .headers(httpHeaders)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("productId", "1")
+                .param("quantity", "10000"); // Very large quantity
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().is4xxClientError());
+    }
+
+    /**
+     * Test creating an order from shopping cart.
+     * Uses the second order ID from data.sql to test the conversion from shopping cart to order.
+     */
+    @Test
+    @Transactional
+    @DisplayName("Should create order from shopping cart")
+    public void shouldCreateOrderFromShoppingCart() throws Exception {
+        // Use the second order from data.sql, which has only one order item
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/orders")
+                .headers(httpHeaders)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("orderId", "2")
+                .param("productId", "4")
+                .param("quantity", "1");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(view().name("myorders"))
+                .andExpect(model().attributeExists("orderViewList"))
+                .andExpect(model().attributeExists("count"));
+    }
+
+    /**
+     * Test deleting an order.
+     * Uses the second order ID from data.sql to test the deletion of an order.
+     */
+    @Test
+    @Transactional
+    @DisplayName("Should delete order and return to shopping cart")
+    public void shouldDeleteOrder() throws Exception {
+        // Use the second order from data.sql
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/orders/{orderId}/delete", 2)
+                .headers(httpHeaders);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(view().name("shoppingcart"))
+                .andExpect(model().attributeExists("orderViewList"));
     }
 }

@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS product
     last_modified_date TIMESTAMP    NOT NULL
     );
 
-CREATE TABLE IF NOT EXISTS user
+CREATE TABLE IF NOT EXISTS "user"
 (
     user_id            INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
     email              VARCHAR(256) NOT NULL UNIQUE, -- UNIQUE -> H2, UNIQUE KEY->MySQL
@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS orders
     user_id            INT       NOT NULL,
     total_amount       INT       NOT NULL,
     created_date       TIMESTAMP NOT NULL,
-    last_modified_date TIMESTAMP NOT NULL
+    last_modified_date TIMESTAMP NOT NULL,
+    iscart            Boolean   NOt NULL
 );
 
 CREATE TABLE IF NOT EXISTS order_item
